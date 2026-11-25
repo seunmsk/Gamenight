@@ -13,13 +13,14 @@ export class Engine {
   }
   human(pid) { return this.players.find(p => p.pid === pid); }
 
-  join(pid, name, col, conn) {
+  join(pid, name, col, conn, look) {
+    look = /^\d-\d$/.test(String(look || '')) ? look : null;
     name = String(name || 'Player').slice(0, 16).trim() || 'Player';
     let p = this.human(pid);
-    if (p) { p.name = name; p.col = col || p.col; p.conn = conn; p.online = true; }
+    if (p) { p.name = name; p.col = col || p.col; p.look = look || p.look; p.conn = conn; p.online = true; }
     else {
       if (this.players.length >= 16) { this.send(conn, { t: 'full' }); return; }
-      p = { pid, name, col: col || COLORS[this.players.length % COLORS.length], score: 0, online: true, conn };
+      p = { pid, name, look, col: col || COLORS[this.players.length % COLORS.length], score: 0, online: true, conn };
       this.players.push(p); sfx('join');
     }
     this.send(conn, { t: 'welcome', pid });
@@ -64,8 +65,8 @@ export class Engine {
   startGame(id, { opts = {}, pids = [], bots = 0 } = {}) {
     const game = GAMES[id]; if (!game) return;
     this.clearTimers();
-    const parts = pids.map(pid => this.human(pid)).filter(Boolean).map(p => ({ pid: p.pid, name: p.name, col: p.col }));
-    for (let i = 0; i < bots; i++) parts.push({ pid: 'cpu' + (i + 1), name: BOT_NAMES[i], col: ['#9aa0a6', '#c8a36b', '#7fb3a8', '#a99bd6', '#d6a29b'][i], bot: true });
+    const parts = pids.map(pid => this.human(pid)).filter(Boolean).map(p => ({ pid: p.pid, name: p.name, col: p.col, look: p.look }));
+    for (let i = 0; i < bots; i++) parts.push({ pid: 'cpu' + (i + 1), name: BOT_NAMES[i], col: ['#9aa0a6', '#c8a36b', '#7fb3a8', '#a99bd6', '#d6a29b'][i], look: ['2-1', '5-3', '3-0', '0-2', '6-4'][i], bot: true });
     const ctx = this.makeCtx(parts, opts);
     this.ctxCur = ctx; this.game = game; this.gameId = id; this.phase = 'game'; this.results = null;
     sfx('start');
@@ -87,7 +88,7 @@ export class Engine {
       const h = this.human(r.pid);
       const pts = pp.bot ? 0 : r.pts;
       if (h) h.score += pts;
-      return { pid: r.pid, name: pp.name || (h && h.name) || '?', col: pp.col, s: r.s, place: r.place, pts, bot: !!pp.bot };
+      return { pid: r.pid, name: pp.name || (h && h.name) || '?', col: pp.col, look: pp.look, s: r.s, place: r.place, pts, bot: !!pp.bot };
     });
     const humans = rows.filter(r => !r.bot);
     let forfeit = null;
@@ -117,14 +118,14 @@ export class Engine {
 
   viewFor(pid) {
     const p = this.human(pid);
-    const me = p ? { pid, name: p.name, col: p.col, score: p.score } : { pid, name: 'You' };
+    const me = p ? { pid, name: p.name, col: p.col, look: p.look, score: p.score } : { pid, name: 'You' };
     const base = { me, code: this.code };
     if (this.phase === 'game' && this.game) {
       if (!this.ctxCur.p(pid)) return { ...base, screen: 'watch', game: this.gameId, gameName: this.game.name };
       return { ...base, screen: 'game', game: this.gameId, data: this.game.phone(this.ctxCur, this.gs, pid) };
     }
     if (this.phase === 'results') return { ...base, screen: 'results', results: this.results };
-    const night = this.players.map(x => ({ pid: x.pid, name: x.name, col: x.col, score: x.score })).sort((a, b) => b.score - a.score);
+    const night = this.players.map(x => ({ pid: x.pid, name: x.name, col: x.col, look: x.look, score: x.score })).sort((a, b) => b.score - a.score);
     return { ...base, screen: 'lobby', night, count: this.players.length };
   }
 
@@ -145,7 +146,7 @@ export class Engine {
 
   save() {
     if (this.solo) return;
-    try { localStorage.setItem('gamenight-host', JSON.stringify({ code: this.code, t: Date.now(), played: this.played, players: this.players.map(({ pid, name, col, score }) => ({ pid, name, col, score })) })); } catch (e) { }
+    try { localStorage.setItem('gamenight-host', JSON.stringify({ code: this.code, t: Date.now(), played: this.played, players: this.players.map(({ pid, name, col, look, score }) => ({ pid, name, col, look, score })) })); } catch (e) { }
   }
   restore(saved) {
     this.players = (saved.players || []).map(p => ({ ...p, online: false, conn: null }));

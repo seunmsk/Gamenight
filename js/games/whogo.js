@@ -1,5 +1,6 @@
 import { sample, esc, A, av, timer } from '../ui.js';
 import { WHO_GO } from '../content.js';
+import { character } from '../characters.js';
 
 const VOTE_SECS = 20;
 
@@ -72,12 +73,12 @@ export default {
     const rows = ctx.humans().filter(p => gs.tally[p.pid]).sort((a, b) => gs.tally[b.pid] - gs.tally[a.pid]).map(p =>
       `<div class="vrow ${gs.top.includes(p.pid) ? 'top' : ''}">${av(p)}<span>${esc(p.name)}</span><div class="meter"><i style="width:${gs.tally[p.pid] / max * 100}%"></i></div><b>${gs.tally[p.pid]}</b></div>`).join('');
     const names = gs.top.map(pid => esc(ctx.name(pid))).join(' & ');
-    return `<div class="center-stack">${meta}<p class="lead">${esc(q)}</p><h1 class="display hot">${names || 'Nobody voted!'}</h1><div class="vrows">${rows}</div>
+    return `<div class="center-stack">${meta}<p class="lead">${esc(q)}</p><div class="top-chrs">${gs.top.slice(0, 3).map(pid => { const p = ctx.p(pid); return `<div class="stage-chr">${character(p.look, p.col, { pose: 'up', face: 'wow', seed: p.pid })}</div>`; }).join('')}</div><h1 class="display hot">${names || 'Nobody voted!'}</h1><div class="vrows">${rows}</div>
       <button class="btn ghost" data-a='${A({ k: 'skip' })}'>Next</button></div>`;
   },
   phone(ctx, gs, pid) {
     if (ctx.solo) return { k: 'solo' };
-    return { k: gs.phase, q: gs.qs[gs.i], end: gs.end, mine: gs.votes[pid] || null, opts: ctx.humans().map(p => ({ pid: p.pid, name: p.name, col: p.col })), top: gs.top || [], withCrowd: gs.phase === 'reveal' && (gs.top || []).includes(gs.votes[pid]), names: (gs.top || []).map(x => ctx.name(x)) };
+    return { k: gs.phase, q: gs.qs[gs.i], end: gs.end, mine: gs.votes[pid] || null, opts: ctx.humans().map(p => ({ pid: p.pid, name: p.name, col: p.col, look: p.look })), top: gs.top || [], withCrowd: gs.phase === 'reveal' && (gs.top || []).includes(gs.votes[pid]), names: (gs.top || []).map(x => ctx.name(x)) };
   },
   renderPhone(d) {
     if (d.k === 'solo') return '';

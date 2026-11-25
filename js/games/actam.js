@@ -1,5 +1,6 @@
 import { shuffle, esc, A, av, timer } from '../ui.js';
 import { ACT_AM } from '../content.js';
+import { character } from '../characters.js';
 
 const TEAMCOL = ['#ff4f6d', '#4f8cff', '#2fd06b', '#f5b301'];
 const TEAMNAME = ['Team Suya', 'Team Puff-Puff', 'Team Zobo', 'Team Chin-Chin'];
@@ -66,7 +67,7 @@ export default {
     const board = `<div class="teamscores">${gs.teams.map((t, i) => `<div class="ts ${t === team ? 'on' : ''}" style="--c:${t.col}"><b>${esc(t.name)}</b><span>${t.score}</span>${ctx.solo ? '' : `<i>${t.members.map(pid => av(ctx.p(pid), 'sm')).join('')}</i>`}</div>`).join('')}</div>`;
     const round = `<span class="pill">Turn ${Math.min(gs.turn + 1, gs.total)} of ${gs.total}</span>`;
     if (gs.phase === 'ready') return `${board}<div class="center-stack">${round}<h1 class="display" style="color:${team.col}">${esc(team.name)}</h1>
-      <p class="lead">${actor ? `${av(actor)} <b>${esc(actor.name)}</b> is acting. Check your phone to start.` : 'Pass the phone to whoever is acting.'}</p>
+      ${actor ? `<div class="stage-chr">${character(actor.look, actor.col, { pose: 'wave', seed: actor.pid })}</div>` : ''}<p class="lead">${actor ? `<b>${esc(actor.name)}</b> is acting. Check your phone to start.` : 'Pass the phone to whoever is acting.'}</p>
       ${ctx.solo ? '' : `<button class="btn ghost" data-a='${A({ k: 'begin' })}'>Start turn</button>`}</div>`;
     if (gs.phase === 'play' && ctx.solo) return board;
     if (gs.phase === 'play') return `${board}<div class="center-stack">${round}<div class="bigtimer">${timer(gs.end, 'huge')}</div>

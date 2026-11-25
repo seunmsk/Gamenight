@@ -1,4 +1,5 @@
 // Shared helpers for Game Night
+import { character } from './characters.js';
 export const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 export const shuffle = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
 export const pick = a => a[Math.random() * a.length | 0];
@@ -9,8 +10,8 @@ export const COLORS = ['#ff4f6d', '#f5b301', '#16c2a3', '#4f8cff', '#b45cff', '#
 
 export function av(p, cls = '') {
   if (!p) return '';
-  const ini = (p.name || '?').trim().slice(0, 2).toUpperCase();
-  return `<span class="av ${cls}" style="--c:${esc(p.col || '#888')}">${esc(ini)}</span>`;
+  const col = /^#[0-9a-f]{6}$/i.test(p.col || '') ? p.col : '#888888';
+  return `<span class="av ${cls}" style="--c:${col}" title="${esc(p.name)}">${character(p.look, col, { crop: true, seed: p.pid || p.name })}</span>`;
 }
 
 // countdown element; `end` is host time (ms). Phones correct for clock offset.

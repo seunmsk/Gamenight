@@ -1,6 +1,7 @@
 import { esc, A, av, COLORS, patch, delegate, toast, unlockAudio, setClockOffset, sfx, isMuted, setMuted } from './ui.js';
 import { hostRoom, joinRoom, makeCode, useLocal } from './net.js';
 import { Engine } from './engine.js';
+import { character, mc, STYLES, SKINS } from './characters.js';
 import { GAMES, ORDER } from './games/index.js';
 
 const $ = s => document.querySelector(s);
@@ -24,12 +25,15 @@ document.addEventListener('click', e => {
 });
 
 // ================= HOME =================
+const CROWD = [['4-0', '#b45cff', 'wave'], ['3-2', '#4f8cff', 'up'], ['0-1', '#ff4f6d', 'dance'], ['1-3', '#f5b301', 'mic'], ['6-4', '#2fd06b', 'dance'], ['5-1', '#ff8a3d', 'up'], ['7-2', '#ff5cc8', 'wave']];
+const bunting = () => `<div class="bunting" aria-hidden="true"></div>`;
 function home() {
   app.dataset.mode = 'home'; document.body.className = 'home';
   const saved = store.get('host', null);
   const canResume = saved && saved.code && Date.now() - saved.t < 12 * 3600e3 && (saved.players || []).length;
-  app.innerHTML = `<div class="hero">
+  app.innerHTML = `${bunting()}<div class="hero">
     <div class="hero-top">${logo('big')}<p class="tag">Na we dey play. One big screen, everybody on their phone.</p></div>
+    <div class="crowd">${CROWD.map(([l, c, pose], i) => `<div class="crowd-one" style="--d:${i * 0.17}s">${character(l, c, { pose, seed: 'h' + i })}</div>`).join('')}</div>
     <div class="hero-cards">
       <button class="hcard h1" data-go="host"><b>Host a games night</b><span>Open this on a laptop or TV. Everyone joins with a code.</span></button>
       <button class="hcard h2" data-go="join"><b>Join a room</b><span>On your phone. Enter the code on the big screen.</span></button>
@@ -61,7 +65,7 @@ async function startHost(saved) {
         onOpen() { },
         onData(conn, m) {
           if (!m || typeof m !== 'object') return;
-          if (m.t === 'join') eng.join(String(m.pid || conn).slice(0, 40), m.name, COLORS.includes(m.col) ? m.col : null, conn);
+          if (m.t === 'join') eng.join(String(m.pid || conn).slice(0, 40), m.name, COLORS.includes(m.col) ? m.col : null, conn, m.look);
           else if (m.t === 'act') { const p = eng.players.find(x => x.conn === conn); if (p) eng.act(p.pid, m.a); }
         },
         onClose(conn) { eng.offline(conn); }
@@ -76,7 +80,7 @@ async function startHost(saved) {
     }
   }
   eng.code = code;
-  app.innerHTML = `<header class="bar">${logo()}<span class="roomcode">Room <b>${code}</b></span><span class="grow"></span><span id="pcount" class="muted"></span>${muteBtn()}<button class="iconbtn" data-ui="endgame" hidden>End game</button><button class="iconbtn" data-ui="leave">Close room</button></header>
+  app.innerHTML = `${bunting()}<header class="bar">${logo()}<span class="roomcode">Room <b>${code}</b></span><span class="grow"></span><span id="pcount" class="muted"></span>${muteBtn()}<button class="iconbtn" data-ui="endgame" hidden>End game</button><button class="iconbtn" data-ui="leave">Close room</button></header>
     <main id="stage" class="stage"></main><div id="modal"></div>`;
   delegate($('#stage'), a => eng.act('host', a));
   app.addEventListener('click', hostUI);
@@ -132,7 +136,7 @@ function lobbyTV() {
       <div class="bigcode">${eng.code.split('').map(c => `<span>${c}</span>`).join('')}</div>
       ${qr ? `<div class="qr">${qr}</div>` : ''}
       <p class="url">${esc(url.replace(/^https?:\/\//, ''))}</p>
-      <div class="plist">${eng.players.length ? eng.players.map(p => `<span class="chip ${p.online ? '' : 'off'}">${av(p, 'sm')} ${esc(p.name)}<button data-ui="kick" data-pid="${esc(p.pid)}" aria-label="Remove ${esc(p.name)}">×</button></span>`).join('') : '<p class="muted">Waiting for players…</p>'}</div>
+      <div class="floor">${eng.players.length ? eng.players.map((p, i) => `<div class="dancer ${p.online ? '' : 'off'}" style="--d:${(i % 5) * 0.21}s">${character(p.look, p.col, { pose: ['dance', 'wave', 'up', 'dance', 'idle'][i % 5], seed: p.pid })}<span class="ntag">${esc(p.name)}<button data-ui="kick" data-pid="${esc(p.pid)}" aria-label="Remove ${esc(p.name)}">×</button></span></div>`).join('') : mc('Oya! Scan the code and join. Party no dey wait!')}</div>
     </section>
     <section class="pickgame">
       <h2>Pick a game</h2>
@@ -197,15 +201,18 @@ function openSetup(id, solo, refresh) {
   };
 }
 
+const crown = () => `<svg class="crown" viewBox="0 0 60 36" aria-hidden="true"><path d="M4 32 0 6l16 12L30 0l14 18L60 6l-4 26z" fill="#f5b301" stroke="#a87600" stroke-width="2"/><circle cx="30" cy="20" r="4" fill="#ff4f6d"/><circle cx="16" cy="24" r="3" fill="#16c2a3"/><circle cx="44" cy="24" r="3" fill="#4f8cff"/></svg>`;
+const confetti = () => `<div class="confetti" aria-hidden="true">${Array.from({ length: 18 }, (_, i) => `<i style="--x:${(i * 37) % 100}%;--d:${(i % 6) * 0.35}s;--c:${['#ff4f6d', '#f5b301', '#16c2a3', '#4f8cff', '#b45cff', '#2fd06b'][i % 6]}"></i>`).join('')}</div>`;
+function forfeitChr(r, pid) { const x = r.rows.find(y => y.pid === pid); return x ? `<span class="ff-chr">${character(x.look, x.col, { pose: 'sad', seed: x.pid })}</span>` : ''; }
 function resultsTV(r, engine) {
   const g = GAMES[r.gameId];
   const night = engine.players.slice().sort((a, b) => b.score - a.score);
   const place = n => ['1st', '2nd', '3rd'][n] || `${n + 1}th`;
   return `<div class="results" style="--c:${g.color}">
-    <div class="res-main"><p class="pill">${esc(r.gameName)} · final</p><h1 class="display">${esc(r.title || (r.rows[0] ? r.rows[0].name + ' wins!' : 'Game over'))}</h1>
+    <div class="res-main"><div class="winner-hero">${confetti()}${r.rows[0] ? `<div class="crowned">${crown()}${character(r.rows[0].look, r.rows[0].col, { pose: 'up', seed: r.rows[0].pid })}</div>` : ''}</div><p class="pill">${esc(r.gameName)} · final</p><h1 class="display">${esc(r.title || (r.rows[0] ? r.rows[0].name + ' wins!' : 'Game over'))}</h1>
       <ol class="podium">${r.rows.map(x => `<li class="pl${x.place}">${av(x)}<span class="pn">${esc(x.name)}</span><span class="pp">${engine.solo && r.rows.length < 2 ? '' : place(x.place)}</span>${r.unit !== '' ? `<span class="ps">${x.s} ${esc(r.unit)}</span>` : ''}${x.pts && !engine.solo ? `<b class="plus">+${x.pts}</b>` : '<span></span>'}</li>`).join('')}</ol>
       ${r.lines.length ? `<div class="reslines">${r.lines.map(l => `<p>${l}</p>`).join('')}</div>` : ''}
-      ${r.forfeit ? `<div class="forfeit"><span>Forfeit for ${esc(r.forfeit.name)}</span><b>${esc(r.forfeit.text)}</b></div>` : ''}
+      ${r.forfeit ? `<div class="forfeit">${forfeitChr(r, r.forfeit.pid)}<div><span>Forfeit for ${esc(r.forfeit.name)}</span><b>${esc(r.forfeit.text)}</b></div></div>` : ''}
       ${engine.solo ? '<button class="btn huge" data-ui="again">Play again</button>' : ''}<button class="btn ${engine.solo ? 'ghost' : 'huge'}" data-a='${A({ k: '__back' })}'>${engine.solo ? 'Back to games' : 'Back to lobby'}</button></div>
     ${engine.solo ? '' : `<aside class="night"><h2>Tonight</h2><ol>${night.map(p => `<li>${av(p, 'sm')}<span>${esc(p.name)}</span><b>${p.score}</b></li>`).join('')}</ol></aside>`}
   </div>`;
@@ -213,39 +220,55 @@ function resultsTV(r, engine) {
 
 // ================= PHONE =================
 let conn = null, myPid = null, phoneView = null, reconnecting = false, joinInfo = null;
+function lookPickerHTML(look, col) {
+  const [st, sk] = look.split('-').map(Number);
+  return `<div class="lp-preview">${character(look, col, { pose: 'wave', seed: 'preview' })}<span>${esc(STYLES[st].name)}</span></div>
+    <div class="lp-side"><p class="lp-h">Pick your character</p>
+    <div class="stylegrid">${STYLES.map((x, i) => `<label title="${esc(x.name)}"><input type="radio" name="style" value="${i}" ${i === st ? 'checked' : ''}><span style="--c:${col}">${character(i + '-' + sk, col, { crop: true, seed: 'p' + i })}</span></label>`).join('')}</div>
+    <p class="lp-h">Skin</p><div class="skins">${SKINS.map((c, i) => `<label><input type="radio" name="skin" value="${i}" ${i === sk ? 'checked' : ''}><i style="--c:${c}"></i></label>`).join('')}</div>
+    <p class="lp-h">Colour</p><div class="colpick">${COLORS.map(c => `<label><input type="radio" name="col" value="${c}" ${c === col ? 'checked' : ''}><i style="--c:${c}"></i></label>`).join('')}</div></div>`;
+}
 function joinScreen(err) {
   app.dataset.mode = 'join'; document.body.className = 'phone';
   const name = store.get('name', ''), col = store.get('col', COLORS[Math.random() * COLORS.length | 0]);
+  let look = store.get('look', null); if (!/^\d-\d$/.test(look || '')) look = (Math.random() * STYLES.length | 0) + '-' + (Math.random() * SKINS.length | 0);
   const code = (params.get('join') || '').toUpperCase().slice(0, 4);
-  app.innerHTML = `<div class="joinwrap">${logo('big')}
+  app.innerHTML = `${bunting()}<div class="joinwrap">${logo('big')}
     <form class="form" id="joinform"><label>Room code<input id="jcode" name="code" maxlength="4" autocapitalize="characters" autocomplete="off" required value="${esc(code)}" placeholder="ABCD" class="codein"></label>
     <label>Your name<input id="jname" name="name" maxlength="14" required value="${esc(name)}" placeholder="e.g. Seun"></label>
-    <div class="colpick">${COLORS.map(c => `<label><input type="radio" name="col" value="${c}" ${c === col ? 'checked' : ''}><i style="--c:${c}"></i></label>`).join('')}</div>
-    ${err ? `<p class="err">${esc(err)}</p>` : ''}<button class="btn huge" type="submit">Join</button></form>
+    <div class="lookpick" id="lookpick">${lookPickerHTML(look, col)}</div>
+    ${err ? `<p class="err">${esc(err)}</p>` : ''}<button class="btn huge" type="submit">Join the party</button></form>
     <button class="linkbtn" id="backhome">Back</button></div>`;
   $('#backhome').onclick = () => { history.replaceState(null, '', location.pathname + (useLocal ? '?net=local' : '')); home(); };
-  $('#joinform').onsubmit = e => {
+  const form = $('#joinform');
+  form.addEventListener('change', e => {
+    if (!e.target.closest('#lookpick')) return;
+    const f = new FormData(form);
+    $('#lookpick').innerHTML = lookPickerHTML(`${f.get('style')}-${f.get('skin')}`, f.get('col'));
+  });
+  form.onsubmit = e => {
     e.preventDefault(); unlockAudio();
     const f = new FormData(e.target);
     const c = String(f.get('code')).toUpperCase().replace(/[^A-Z]/g, ''); const n = String(f.get('name')).trim(); const cl = f.get('col');
+    const lk = `${f.get('style')}-${f.get('skin')}`;
     if (c.length !== 4) return joinScreen('The code has 4 letters');
-    store.set('name', n); store.set('col', cl);
-    connect(c, n, cl);
+    store.set('name', n); store.set('col', cl); store.set('look', lk);
+    connect(c, n, cl, lk);
   };
 }
-async function connect(code, name, col) {
-  joinInfo = { code, name, col };
+async function connect(code, name, col, look) {
+  joinInfo = { code, name, col, look };
   const ids = store.get('pids', {});
   myPid = (!params.get('fresh') && ids[code]) || ('p' + Math.random().toString(36).slice(2, 10));
   ids[code] = myPid; store.set('pids', ids);
   if (!reconnecting) app.innerHTML = `<div class="center-stack fill">${logo('big')}<p class="lead">Joining ${esc(code)}…</p></div>`;
   try {
     conn = await joinRoom(code, { onData: phoneData, onClose: lostConn });
-    conn.send({ t: 'join', pid: myPid, name, col });
+    conn.send({ t: 'join', pid: myPid, name, col, look });
     reconnecting = false; keepAwake();
     const ov = $('#reconn'); if (ov) ov.remove();
   } catch (err) {
-    if (reconnecting) { setTimeout(() => connect(code, name, col), 3000); return; }
+    if (reconnecting) { setTimeout(() => connect(code, name, col, look), 3000); return; }
     joinScreen(err.message || 'Could not join');
   }
 }
@@ -253,7 +276,7 @@ function lostConn() {
   if (reconnecting) return;
   reconnecting = true;
   if (!$('#reconn')) { const d = document.createElement('div'); d.id = 'reconn'; d.innerHTML = '<div><b>Reconnecting…</b><p>Keep this page open. If the host closed the room, go back.</p><button class="btn ghost" onclick="location.reload()">Go back</button></div>'; document.body.appendChild(d); }
-  setTimeout(() => connect(joinInfo.code, joinInfo.name, joinInfo.col), 1500);
+  setTimeout(() => connect(joinInfo.code, joinInfo.name, joinInfo.col, joinInfo.look), 1500);
 }
 function phoneShell() {
   if ($('#pmain')) return;
@@ -278,15 +301,15 @@ function renderPhone(v) {
   main.dataset.screen = v.screen;
   if (v.screen === 'lobby') {
     const rank = v.night.findIndex(p => p.pid === v.me.pid) + 1;
-    patch(main, `<div class="center-stack"><div class="bigav">${av(v.me, 'xl')}</div><h1 class="display">You’re in, ${esc(v.me.name)}!</h1><p class="lead">Look at the big screen. The host is picking a game.</p>
+    patch(main, `<div class="center-stack"><div class="me-chr">${character(v.me.look, v.me.col, { pose: 'dance', seed: v.me.pid })}</div><h1 class="display">You’re in, ${esc(v.me.name)}!</h1><p class="lead">Look at the big screen. The host is picking a game.</p>
       <p class="muted">${v.count} in the room${v.me.score ? ` · you’re #${rank} tonight` : ''}</p></div>`);
     return;
   }
-  if (v.screen === 'watch') { patch(main, `<div class="center-stack"><h2>${esc(v.gameName)} is on</h2><p class="lead">You’re watching this one. You’ll be in the next game.</p></div>`); return; }
+  if (v.screen === 'watch') { patch(main, `<div class="center-stack"><h2>${esc(v.gameName)} is on</h2>${mc('You dey watch this one. Next game, na you!')}</div>`); return; }
   if (v.screen === 'results') {
     const r = v.results, me = r.rows.find(x => x.pid === v.me.pid);
     const ff = r.forfeit && r.forfeit.pid === v.me.pid;
-    patch(main, `<div class="result ${me && me.place === 0 ? 'good' : ''}"><p class="pill">${esc(r.gameName)}</p><h2>${me ? (me.place === 0 ? 'You won!' : `You came ${['1st', '2nd', '3rd'][me.place] || me.place + 1 + 'th'}`) : 'Game over'}</h2>
+    patch(main, `<div class="result ${me && me.place === 0 ? 'good' : ''}"><div class="me-chr sm">${character(v.me.look, v.me.col, { pose: me && me.place === 0 ? 'up' : ff ? 'sad' : 'wave', seed: v.me.pid })}</div><p class="pill">${esc(r.gameName)}</p><h2>${me ? (me.place === 0 ? 'You won!' : `You came ${['1st', '2nd', '3rd'][me.place] || me.place + 1 + 'th'}`) : 'Game over'}</h2>
       ${me && me.pts ? `<p class="big">+${me.pts} pts</p>` : ''}${ff ? `<div class="forfeit"><span>Your forfeit</span><b>${esc(r.forfeit.text)}</b></div>` : ''}<p class="muted">Look at the big screen</p></div>`);
     return;
   }
@@ -330,7 +353,7 @@ function startSolo(id, st) {
   delegate(stage, a => se.act('me', a)); delegate(pad, a => se.act('me', a));
   $('#squit').onclick = () => { se.clearTimers(); se.ctxCur = null; soloMenu(); };
   stage.addEventListener('click', e => { if (e.target.closest('[data-ui="again"]')) { se.clearTimers(); se.ctxCur = null; startSolo(id, st); } });
-  se.join('me', store.get('name', '') || 'You', store.get('col', COLORS[0]), null);
+  se.join('me', store.get('name', '') || 'You', store.get('col', COLORS[0]), null, store.get('look', '2-1'));
   se.started = true;
   se.startGame(id, { opts: st.opts, pids: ['me'], bots: st.bots });
 }

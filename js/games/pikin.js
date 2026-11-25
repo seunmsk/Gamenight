@@ -71,7 +71,7 @@ export default {
   phone(ctx, gs, pid) {
     if (gs.phase === 'upload') return { k: 'upload', done: !!gs.photos[pid] };
     const owner = gs.order[gs.i];
-    return { k: gs.phase, mine: owner === pid, opts: ctx.humans().filter(p => gs.photos[p.pid] && p.pid !== pid).map(p => ({ pid: p.pid, name: p.name, col: p.col })), vote: gs.votes[pid] || null, owner: gs.phase === 'reveal' ? ctx.name(owner) : '', right: gs.phase === 'reveal' && gs.votes[pid] === owner, end: gs.end };
+    return { k: gs.phase, mine: owner === pid, opts: ctx.humans().filter(p => gs.photos[p.pid] && p.pid !== pid).map(p => ({ pid: p.pid, name: p.name, col: p.col, look: p.look })), vote: gs.votes[pid] || null, owner: gs.phase === 'reveal' ? ctx.name(owner) : '', right: gs.phase === 'reveal' && gs.votes[pid] === owner, end: gs.end };
   },
   renderPhone(d) {
     if (d.k === 'upload') {

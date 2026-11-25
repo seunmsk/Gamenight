@@ -1,5 +1,6 @@
 import { sample, shuffle, esc, A, av, timer } from '../ui.js';
 import { JOLLOF_TRIVIA, POT_OR_NOT, INGREDIENTS_GOOD, INGREDIENTS_BAD } from '../content.js';
+import { mc } from '../characters.js';
 import { prepQs, qBegin, qAnswer, qSkip, qTV, qPhone, qRenderPhone } from './quiz.js';
 
 const TEAMS = { NG: { name: 'Team Naija', col: '#2fd06b' }, GH: { name: 'Team Ghana', col: '#f5b301' } };
@@ -117,7 +118,7 @@ export default {
         <div class="teams2"><div class="teamcol" style="--c:${TEAMS.NG.col}"><h2>Team Naija</h2>${col('NG')}</div><div class="teamcol" style="--c:${TEAMS.GH.col}"><h2>Team Ghana</h2>${col('GH')}</div></div>
         <button class="btn" data-a='${A({ k: 'go' })}'>Lock teams</button></div>`;
     }
-    if (gs.phase === 'intro') return `${bar}<div class="center-stack intro"><h1 class="display">${esc(gs.introT)}</h1><p class="lead">${esc(gs.introS)}</p><button class="btn ghost" data-a='${A({ k: 'skip' })}'>Start now</button></div>`;
+    if (gs.phase === 'intro') return `${bar}<div class="center-stack intro"><h1 class="display">${esc(gs.introT)}</h1>${mc(esc(gs.introS))}<button class="btn ghost" data-a='${A({ k: 'skip' })}'>Start now</button></div>`;
     if (gs.phase === 'rush') {
       const rows = ctx.humans().map(p => { const r = gs.rush[p.pid]; return `<div class="rushrow" style="--c:${TEAMS[gs.team[p.pid]].col}">${av(p, 'sm')}<span>${esc(p.name)}</span><div class="meter"><i style="width:${r.found / 6 * 100}%"></i></div><b>${r.found}/6</b></div>`; }).join('');
       return `${bar}<div class="center-stack"><h1 class="display">Ingredient Rush ${timer(gs.rushEnd, 'big')}</h1><p class="lead">Find the 6 jollof ingredients on your phone</p><div class="rushrows">${rows}</div><button class="btn ghost" data-a='${A({ k: 'skip' })}'>End round</button></div>`;
