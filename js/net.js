@@ -39,7 +39,7 @@ async function peerHost(code, h) {
     return {
       code,
       send(connId, data) { bc.postMessage({ to: connId, from: 'host', data }); },
-      sendMany(list) { list.forEach(([c, d]) => bc.postMessage({ to: c, from: 'host', data: d })); },
+      sendMany(list, extra = {}) { list.forEach(([c, d]) => bc.postMessage({ to: c, from: 'host', data: { ...d, ...extra } })); },
       close() { bc.close(); }
     };
   }
@@ -52,7 +52,7 @@ async function peerHost(code, h) {
       opened = true;
       resolve({
         code, peer,
-        send(connId, data) { const c = conns.get(connId); if (c && c.open) { try { c.send(data); } catch (e) { console.warn(e); } } },
+        send(connId, data) { const list = connId === '*' ? [...conns.values()] : [conns.get(connId)]; for (const c of list) if (c && c.open) { try { c.send(data); } catch (e) { console.warn(e); } } },
         close() { try { peer.destroy(); } catch (e) { } }
       });
     });
@@ -76,7 +76,7 @@ async function peerJoin(code, h) {
   if (useLocal) {
     const id = 'c' + Math.random().toString(36).slice(2, 9);
     const bc = new BroadcastChannel(PREFIX + code);
-    bc.onmessage = e => { const m = e.data; if (m && m.to === id) h.onData(m.data); };
+    bc.onmessage = e => { const m = e.data; if (m && (m.to === id || m.to === '*')) h.onData(m.data); };
     bc.postMessage({ to: 'host', from: id, hello: true });
     addEventListener('beforeunload', () => bc.postMessage({ to: 'host', from: id, bye: true }));
     return { send(data) { bc.postMessage({ to: 'host', from: id, data }); }, close() { bc.close(); } };
@@ -143,7 +143,7 @@ async function supaHost(code, h) {
         resolve({
           code,
           send(connId, data) { post({ to: connId, data }); },
-          sendMany(list) { if (list.length) post({ many: list }); },
+          sendMany(list, extra = {}) { if (list.length) post({ many: list, ...extra }); },
           close() { try { c.removeChannel(ch); } catch (e) { } }
         });
       } else if (BAD.includes(status) && !done) { done = true; clearTimeout(t); try { c.removeChannel(ch); } catch (e) { } reject(new Error('Could not reach the game server. Check your internet and try again.')); }
@@ -159,7 +159,7 @@ async function supaJoin(code, h) {
   const ready = presenceReady(ch, 4000);
   ch.on('broadcast', { event: 'down' }, ({ payload }) => {
     if (!payload) return;
-    if (payload.many) { const m = payload.many.find(x => x[0] === id); if (m) h.onData(m[1]); return; }
+    if (payload.many) { const m = payload.many.find(x => x[0] === id); if (m) { const d = { ...m[1] }; if ('tv' in payload) d.tv = payload.tv; if ('tvx' in payload) d.tvx = payload.tvx; h.onData(d); } return; }
     if (payload.to === id || payload.to === '*') h.onData(payload.data);
   });
   return new Promise((resolve, reject) => {

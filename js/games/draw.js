@@ -84,9 +84,10 @@ export default {
       if (!s) { if (gs.strokes.length > 600) return false; s = { id: a.id, c: PENS.includes(a.c) ? a.c : '#1b1b1b', w: Math.max(0.004, Math.min(0.06, +a.w || 0.01)), pts: [] }; gs.strokes.push(s); }
       s.pts.push(...pts);
       paintStroke(document.getElementById('drawtv'), s, from);
+      ctx.fx({ k: 'st', id: s.id, c: s.c, w: s.w, pts, from });
       return false;
     }
-    if (a.k === 'clear' && isDrawer && gs.phase === 'draw') { gs.strokes = []; paintAll(document.getElementById('drawtv'), []); return false; }
+    if (a.k === 'clear' && isDrawer && gs.phase === 'draw') { gs.strokes = []; paintAll(document.getElementById('drawtv'), []); ctx.fx({ k: 'clr' }); return false; }
     if (a.k === 'guess' && gs.phase === 'draw' && !isDrawer && !gs.correct.includes(pid)) {
       const g = norm(a.g).slice(0, 40), w = norm(gs.word); if (!g) return false;
       if (g === w || (w.length > 4 && lev(g, w) <= 1)) {
@@ -122,6 +123,22 @@ export default {
       <canvas id="drawtv" class="drawcv"></canvas><p class="muted">${esc(dr.name)} is drawing · ${gs.correct.length} got it</p></div>
       <div class="draw-side">${side}<button class="btn ghost" data-a='${A({ k: 'skip' })}'>${rev ? 'Next' : 'Reveal'}</button></div></div>`;
   },
+  tvData(ctx, gs) { return gs.phase === 'draw' || gs.phase === 'reveal' ? { strokes: gs.strokes } : null; },
+  afterRemoteTV(el, x) {
+    const cv = el.querySelector('#drawtv'); if (!cv) return;
+    el._strokes = ((x && x.strokes) || []).map(s => ({ ...s, pts: s.pts.slice() }));
+    sizeCanvas(cv); paintAll(cv, el._strokes);
+  },
+  onRemoteFx(el, fx) {
+    const cv = el.querySelector('#drawtv'); if (!cv || !fx) return;
+    el._strokes = el._strokes || [];
+    if (fx.k === 'clr') { el._strokes = []; paintAll(cv, []); return; }
+    if (fx.k !== 'st') return;
+    let s = el._strokes.find(x => x.id === fx.id);
+    if (!s) { s = { id: fx.id, c: fx.c, w: fx.w, pts: [] }; el._strokes.push(s); }
+    if (s.pts.length > fx.from) return; // already have these points
+    const from = s.pts.length; s.pts.push(...(fx.pts || [])); paintStroke(cv, s, from);
+  },
   afterTV(el, ctx, gs) {
     const cv = el.querySelector('#drawtv'); if (!cv) return;
     sizeCanvas(cv); paintAll(cv, gs.strokes || []);
@@ -145,7 +162,7 @@ export default {
     if (d.k === 'guess') {
       if (d.got) return `<div class="result good"><h2>You got it!</h2><p>Wait for others…</p>${timer(d.end, 'big')}</div>`;
       return `<div class="center-stack"><div class="qmeta"><span class="pill">${esc(d.drawer)} is drawing</span>${timer(d.end)}</div><p class="blanks">${d.blanks}</p>
-        <form class="form" data-form="guess" data-clear><input id="dg" name="g" type="text" autocomplete="off" maxlength="30" placeholder="Type your guess" required><button class="btn" type="submit">Guess</button></form><p class="muted small">Look at the big screen</p></div>`;
+        <form class="form" data-form="guess" data-clear><input id="dg" name="g" type="text" autocomplete="off" maxlength="30" placeholder="Type your guess" required><button class="btn" type="submit">Guess</button></form><p class="muted small">Watch the drawing and guess fast</p></div>`;
     }
     return `<div class="result ${d.got ? 'good' : ''}"><h2>It was: ${esc(d.word)}</h2><p>${d.drawer ? `${d.n} people got it` : d.got ? 'You got it!' : 'You missed this one'}</p></div>`;
   },

@@ -24,6 +24,7 @@ export class Engine {
       this.players.push(p); sfx('join');
     }
     this.send(conn, { t: 'welcome', pid });
+    this._lastTV = null;
     this.sync(); this.save();
   }
   offline(conn) {
@@ -54,7 +55,8 @@ export class Engine {
       sync: () => { if (eng.ctxCur === ctx && !eng._starting) eng.sync(); },
       fx(msg, toPid) {
         if (eng.solo) { eng.onSoloFx && eng.onSoloFx(msg); return; }
-        for (const p of eng.players) if (p.online && p.conn && (!toPid || p.pid === toPid)) eng.send(p.conn, { t: 'fx', fx: msg });
+        if (!toPid) { eng.send('*', { t: 'fx', fx: msg }); return; }
+        for (const p of eng.players) if (p.online && p.conn && p.pid === toPid) eng.send(p.conn, { t: 'fx', fx: msg });
       },
       finish: (scores, extra) => { if (eng.ctxCur === ctx) eng.finish(scores, extra); },
       sfx
@@ -140,7 +142,13 @@ export class Engine {
         else {
           const now = Date.now(), batch = [];
           for (const p of this.players) if (p.online && p.conn) batch.push([p.conn, { t: 'view', now, v: this.viewFor(p.pid) }]);
-          if (this.sendMany) this.sendMany(batch); else batch.forEach(([c, m]) => this.send(c, m));
+          const extra = {};
+          if (this.shareTV && this.getTV) {
+            const t = this.getTV(), html = t.html || '';
+            if (html !== this._lastTV) { extra.tv = html; this._lastTV = html; }
+            if (t.x) extra.tvx = t.x;
+          }
+          if (this.sendMany) this.sendMany(batch, extra); else batch.forEach(([c, m]) => this.send(c, { ...m, ...extra }));
         }
       } while (this._again);
     } finally { this._syncing = false; }
@@ -150,7 +158,7 @@ export class Engine {
 
   save() {
     if (this.solo) return;
-    try { localStorage.setItem('gamenight-host', JSON.stringify({ code: this.code, t: Date.now(), played: this.played, players: this.players.map(({ pid, name, col, look, score }) => ({ pid, name, col, look, score })) })); } catch (e) { }
+    try { localStorage.setItem('gamenight-host', JSON.stringify({ ...(this.saveExtra || {}), code: this.code, t: Date.now(), played: this.played, players: this.players.map(({ pid, name, col, look, score }) => ({ pid, name, col, look, score })) })); } catch (e) { }
   }
   restore(saved) {
     this.players = (saved.players || []).map(p => ({ ...p, online: false, conn: null }));

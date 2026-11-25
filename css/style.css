@@ -451,3 +451,32 @@ body.tv .bar { top: 26px; }
 @media (max-width: 760px) { .crowd-one { width: 17vw; margin: 0 -8px; } .crowd-one:nth-child(n+6) { display: none; } }
 @media (prefers-reduced-motion: reduce) { .crowd-one, .dancer .chr, .mc-chr, .me-chr, .crowned, .stage-chr, .lp-preview .chr { animation: none !important; } .confetti { display: none; } }
 .top-chrs { display: flex; gap: 10px; justify-content: center; }
+
+/* ===== online mode ===== */
+.hero-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.h4 { background: var(--blue); }
+@media (max-width: 1100px) { .hero-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .hero-cards { grid-template-columns: 1fr; } }
+.online-intro { text-align: center; max-width: 420px; } .online-intro h2 { margin-bottom: 6px; }
+.invite { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 10px 0 4px; }
+.invite .btn { min-height: 44px; padding: 8px 16px; font-size: 15px; text-decoration: none; }
+.invite.big .btn.wa { flex: 1 1 100%; min-height: 54px; font-size: 18px; }
+.btn.wa { background: #25d366; color: #04310f; box-shadow: 0 4px 0 #128c43; }
+.rstage { padding: 10px 12px 4px; border-bottom: 1px solid var(--line); font-size: 15px; }
+.rstage[hidden] { display: none; }
+.rstage .btn, .rstage .gamehead .rules, .rstage .linkbtn { display: none !important; }
+.rstage .gamehead { margin-bottom: 8px; } .rstage .gamehead .gdot { width: 32px; height: 32px; font-size: 15px; }
+.rstage .display { font-size: clamp(22px, 6.5vw, 34px); }
+.rstage .qtext { font-size: clamp(20px, 5.6vw, 30px); }
+.rstage .center-stack { padding: 4px 0; gap: 8px; }
+.rstage .timer.huge { font-size: 64px; }
+.rstage .results { gap: 12px; } .rstage .night { display: none; }
+body.has-stage:has(.drawpad) #rstage { display: none; }
+.has-stage .pmain .pq-text, .has-stage .pmain .pq .qmeta .pill, body.online .pad .pq-text, body.online .pad .pq .qmeta .pill { display: none; }
+body.online .pad { border-top: 1px solid var(--line); max-width: 640px; width: 100%; margin: 0 auto; }
+body.online .pad[hidden] { display: none; }
+body.online .stage { padding: clamp(10px, 2vw, 28px); }
+@media (max-width: 600px) { body.tv .bar { gap: 8px; padding: 8px 10px; } body.tv #pcount { display: none; } body.tv .bar .iconbtn { padding: 4px 10px; font-size: 13px; min-height: 36px; } }
+.has-stage .pmain .dicebox, body.online .pad .dicebox { display: none; }
+body.online .gamehead .rules { display: none; }
+@media (min-width: 900px) { body.online .gamehead .rules { display: inline; } }

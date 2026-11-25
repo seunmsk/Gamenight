@@ -32,11 +32,12 @@ function home() {
   const saved = store.get('host', null);
   const canResume = saved && saved.code && Date.now() - saved.t < 12 * 3600e3 && (saved.players || []).length;
   app.innerHTML = `${bunting()}<div class="hero">
-    <div class="hero-top">${logo('big')}<p class="tag">Na we dey play. One big screen, everybody on their phone.</p></div>
+    <div class="hero-top">${logo('big')}<p class="tag">Na we dey play. Everybody on their phone, in the room or anywhere.</p></div>
     <div class="crowd">${CROWD.map(([l, c, pose], i) => `<div class="crowd-one" style="--d:${i * 0.17}s">${character(l, c, { pose, seed: 'h' + i })}</div>`).join('')}</div>
     <div class="hero-cards">
       <button class="hcard h1" data-go="host"><b>Host a games night</b><span>Open this on a laptop or TV. Everyone joins with a code.</span></button>
       <button class="hcard h2" data-go="join"><b>Join a room</b><span>On your phone. Enter the code on the big screen.</span></button>
+      <button class="hcard h4" data-go="online"><b>Play online with friends</b><span>No TV needed. Start a room on your phone and invite friends anywhere.</span></button>
       <button class="hcard h3" data-go="solo"><b>Play solo</b><span>Trivia, Whot, Ludo and Ayo against the CPU.</span></button>
     </div>
     ${canResume ? `<button class="btn ghost" data-go="resume">Resume room ${esc(saved.code)} (${saved.players.length} players)</button>` : ''}
@@ -45,18 +46,71 @@ function home() {
   app.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => {
     unlockAudio();
     const g = b.dataset.go;
-    if (g === 'host') startHost(); else if (g === 'join') joinScreen(); else if (g === 'solo') soloMenu(); else if (g === 'resume') startHost(saved);
+    if (g === 'host') startHost(); else if (g === 'join') joinScreen(); else if (g === 'solo') soloMenu(); else if (g === 'online') onlineSetup();
+    else if (g === 'resume') startHost(saved, saved.online && saved.me ? { online: true, me: saved.me } : {});
   }));
 }
 
+// ================= ONLINE (host + play on one phone) =================
+function onlineSetup(err) {
+  app.dataset.mode = 'join'; document.body.className = 'phone';
+  const name = store.get('name', ''), col = store.get('col', COLORS[Math.random() * COLORS.length | 0]);
+  let look = store.get('look', null); if (!/^\d-\d$/.test(look || '')) look = (Math.random() * STYLES.length | 0) + '-' + (Math.random() * SKINS.length | 0);
+  app.innerHTML = `${bunting()}<div class="joinwrap">${logo('big')}
+    <div class="online-intro"><h2>Play online with friends</h2><p class="muted">You start the room on this phone and play too. Then invite friends on WhatsApp. They can join from anywhere.</p></div>
+    <form class="form" id="joinform">
+    <label>Your name<input id="jname" name="name" maxlength="14" required value="${esc(name)}" placeholder="e.g. Seun"></label>
+    <div class="lookpick" id="lookpick">${lookPickerHTML(look, col)}</div>
+    ${err ? `<p class="err">${esc(err)}</p>` : ''}<button class="btn huge" type="submit">Start my room</button></form>
+    <button class="linkbtn" id="backhome">Back</button></div>`;
+  $('#backhome').onclick = home;
+  const form = $('#joinform');
+  form.addEventListener('change', e => {
+    if (!e.target.closest('#lookpick')) return;
+    const f = new FormData(form);
+    $('#lookpick').innerHTML = lookPickerHTML(`${f.get('style')}-${f.get('skin')}`, f.get('col'));
+  });
+  form.onsubmit = e => {
+    e.preventDefault(); unlockAudio();
+    const f = new FormData(e.target);
+    const n = String(f.get('name')).trim(); if (!n) return;
+    const lk = `${f.get('style')}-${f.get('skin')}`, cl = f.get('col');
+    store.set('name', n); store.set('col', cl); store.set('look', lk);
+    startHost(null, { online: true, me: { pid: 'h' + Math.random().toString(36).slice(2, 10), name: n, col: cl, look: lk } });
+  };
+}
+const inviteText = code => `Oya join my Game Night! 🎲 Pick your character and let's play. Room code: ${code}\n${joinURL(code)}`;
+function inviteButtons(code, big) {
+  return `<div class="invite ${big ? 'big' : ''}">
+    <a class="btn wa" href="https://wa.me/?text=${encodeURIComponent(inviteText(code))}" target="_blank" rel="noopener">Invite on WhatsApp</a>
+    ${navigator.share ? '<button class="btn" data-ui="share" type="button">Share…</button>' : ''}
+    <button class="btn" data-ui="copylink" type="button">Copy link</button></div>`;
+}
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-ui="share"],[data-ui="copylink"]'); if (!b || !eng || !eng.code) return;
+  const url = joinURL(eng.code);
+  if (b.dataset.ui === 'share') { try { await navigator.share({ title: 'Game Night Naija', text: inviteText(eng.code).replace(url, '').trim(), url }); } catch (x) { } return; }
+  try { await navigator.clipboard.writeText(url); toast('Link copied. Paste it anywhere.'); } catch (x) { toast(url); }
+});
+
 // ================= HOST (big screen) =================
 let eng = null, room = null, setupFor = null, setupState = null;
-async function startHost(saved) {
-  app.dataset.mode = 'host'; document.body.className = 'tv';
+let online = null; // { me } when hosting from a phone
+async function startHost(saved, opt = {}) {
+  online = opt.online ? { me: opt.me } : null;
+  app.dataset.mode = 'host'; document.body.className = online ? 'tv online' : 'tv';
   app.innerHTML = `<div class="center-stack fill">${logo('big')}<p class="lead">Opening the room…</p></div>`;
   keepAwake();
   let code = saved ? saved.code : makeCode(), tries = 0;
-  eng = new Engine({ code, send: (conn, msg) => room && room.send(conn, msg), sendMany: list => room && (room.sendMany ? room.sendMany(list) : list.forEach(([c, m]) => room.send(c, m))), onTV: renderHost });
+  const sendOne = (conn, msg) => { if (conn === 'LOCAL') return localView(msg); if (room) room.send(conn, msg); };
+  const sendMany = (list, extra = {}) => {
+    const rest = [];
+    for (const [c, m] of list) { if (c === 'LOCAL') localView(m); else rest.push([c, m]); }
+    if (!room) return;
+    if (room.sendMany) room.sendMany(rest, extra); else rest.forEach(([c, m]) => room.send(c, { ...m, ...extra }));
+  };
+  eng = new Engine({ code, send: sendOne, sendMany, onTV: renderHost });
+  if (online) { eng.online = true; eng.shareTV = true; eng.getTV = () => ({ html: eng._tvHtml || '', x: eng.phase === 'game' && eng.game && eng.game.tvData ? eng.game.tvData(eng.ctxCur, eng.gs) : null }); }
   window.__gamenight = eng;
   if (saved) eng.restore(saved);
   while (true) {
@@ -81,11 +135,29 @@ async function startHost(saved) {
   }
   eng.code = code;
   app.innerHTML = `${bunting()}<header class="bar">${logo()}<span class="roomcode">Room <b>${code}</b></span><span class="grow"></span><span id="pcount" class="muted"></span>${muteBtn()}<button class="iconbtn" data-ui="endgame" hidden>End game</button><button class="iconbtn" data-ui="leave">Close room</button></header>
-    <main id="stage" class="stage"></main><div id="modal"></div>`;
+    <main id="stage" class="stage"></main>${online ? '<div id="pad" class="pmain pad" hidden></div>' : ''}<div id="modal"></div>`;
   delegate($('#stage'), a => eng.act('host', a));
+  if (online) {
+    delegate($('#pad'), a => eng.act(online.me.pid, a));
+    eng.join(online.me.pid, online.me.name, online.me.col, 'LOCAL', online.me.look);
+  }
   app.addEventListener('click', hostUI);
   loadQR().then(() => renderHost());
+  eng.saveExtra = online ? { online: true, me: online.me } : null;
   eng.save(); renderHost();
+}
+
+// the host's own player view when hosting from a phone
+function localView(msg) {
+  if (!msg || msg.t !== 'view' || !online) return;
+  const pad = $('#pad'); if (!pad) return;
+  const v = msg.v;
+  if (v.screen !== 'game') { pad.hidden = true; patch(pad, ''); return; }
+  const g = GAMES[v.game]; if (!g) return;
+  const html = g.renderPhone(v.data);
+  pad.hidden = !html;
+  patch(pad, `<div class="pgame" data-g="${g.id}">${html}</div>`);
+  g.mountPhone && g.mountPhone(pad, v.data, a => eng.act(online.me.pid, a));
 }
 
 let qrLib = null;
@@ -116,11 +188,14 @@ function renderHost() {
   const eb = app.querySelector('[data-ui="endgame"]'); if (eb) eb.hidden = eng.phase !== 'game';
   stage.dataset.phase = eng.phase; stage.dataset.game = eng.gameId || '';
   if (eng.phase === 'game' && eng.game) {
-    patch(stage, `<div class="gamehead"><span class="gdot" style="--c:${eng.game.color}">${eng.game.glyph}</span><b>${esc(eng.game.name)}</b>${eng.game.rules ? `<span class="rules">${esc(eng.game.rules)}</span>` : ''}</div><div class="gamebody">${eng.game.tv(eng.ctxCur, eng.gs)}</div>`);
+    const html = `<div class="gamehead"><span class="gdot" style="--c:${eng.game.color}">${eng.game.glyph}</span><b>${esc(eng.game.name)}</b>${eng.game.rules ? `<span class="rules">${esc(eng.game.rules)}</span>` : ''}</div><div class="gamebody">${eng.game.tv(eng.ctxCur, eng.gs)}</div>`;
+    eng._tvHtml = html;
+    patch(stage, html);
     eng.game.afterTV && eng.game.afterTV(stage, eng.ctxCur, eng.gs);
     return;
   }
-  if (eng.phase === 'results') { patch(stage, resultsTV(eng.results, eng)); return; }
+  if (eng.phase === 'results') { const html = resultsTV(eng.results, eng); eng._tvHtml = html; patch(stage, html); return; }
+  eng._tvHtml = '';
   patch(stage, lobbyTV());
   if (setupFor) openSetup(setupFor, false, true);
 }
@@ -132,11 +207,12 @@ function lobbyTV() {
   const anyScore = night.some(p => p.score);
   return `<div class="lobby">
     <section class="joincard">
-      <p class="muted">Join on your phone</p>
+      <p class="muted">${online ? 'Invite your friends' : 'Join on your phone'}</p>
       <div class="bigcode">${eng.code.split('').map(c => `<span>${c}</span>`).join('')}</div>
       ${qr ? `<div class="qr">${qr}</div>` : ''}
       <p class="url">${esc(url.replace(/^https?:\/\//, ''))}</p>
-      <div class="floor">${eng.players.length ? eng.players.map((p, i) => `<div class="dancer ${p.online ? '' : 'off'}" style="--d:${(i % 5) * 0.21}s">${character(p.look, p.col, { pose: ['dance', 'wave', 'up', 'dance', 'idle'][i % 5], seed: p.pid })}<span class="ntag">${esc(p.name)}<button data-ui="kick" data-pid="${esc(p.pid)}" aria-label="Remove ${esc(p.name)}">×</button></span></div>`).join('') : mc('Oya! Scan the code and join. Party no dey wait!')}</div>
+      ${inviteButtons(eng.code, online)}
+      <div class="floor">${eng.players.length ? eng.players.map((p, i) => `<div class="dancer ${p.online ? '' : 'off'}" style="--d:${(i % 5) * 0.21}s">${character(p.look, p.col, { pose: ['dance', 'wave', 'up', 'dance', 'idle'][i % 5], seed: p.pid })}<span class="ntag">${esc(p.name)}${p.conn === 'LOCAL' ? ' (you)' : `<button data-ui="kick" data-pid="${esc(p.pid)}" aria-label="Remove ${esc(p.name)}">×</button>`}</span></div>`).join('') : mc('Oya! Scan the code and join. Party no dey wait!')}</div>
     </section>
     <section class="pickgame">
       <h2>Pick a game</h2>
@@ -282,7 +358,7 @@ function lostConn() {
 function phoneShell() {
   if ($('#pmain')) return;
   app.dataset.mode = 'phone'; document.body.className = 'phone';
-  app.innerHTML = `<header class="pbar"><span id="pme"></span><span class="grow"></span><span class="roomcode sm"><span class="rlabel">Room</span> <b>${esc(joinInfo.code)}</b></span>${muteBtn()}</header><main id="pmain" class="pmain"></main>`;
+  app.innerHTML = `<header class="pbar"><span id="pme"></span><span class="grow"></span><span class="roomcode sm"><span class="rlabel">Room</span> <b>${esc(joinInfo.code)}</b></span>${muteBtn()}</header><div id="rstage" class="stage rstage" hidden></div><main id="pmain" class="pmain"></main>`;
   delegate($('#pmain'), a => { if (conn) conn.send({ t: 'act', a }); });
 }
 function phoneData(m) {
@@ -290,10 +366,28 @@ function phoneData(m) {
   if (m.t === 'welcome') return;
   if (m.t === 'kicked') { conn && conn.close(); conn = null; reconnecting = true; app.innerHTML = `<div class="center-stack fill">${logo('big')}<h2>You were removed from the room</h2><button class="btn" onclick="location.reload()">OK</button></div>`; return; }
   if (m.t === 'full') { joinScreen('That room is full (16 players)'); return; }
-  if (m.t === 'view') { setClockOffset(Date.now() - m.now); renderPhone(m.v); }
+  if (m.t === 'view') {
+    setClockOffset(Date.now() - m.now);
+    if ('tv' in m) { remoteTV = m.tv || ''; onlineRoom = true; }
+    remoteTVX = m.tvx || null;
+    renderPhone(m.v);
+  }
+  if (m.t === 'fx' && phoneView && phoneView.game) { const g = GAMES[phoneView.game]; const rs = $('#rstage'); if (g && g.onRemoteFx && rs && !rs.hidden) g.onRemoteFx(rs, m.fx); }
+}
+let remoteTV = '', remoteTVX = null, onlineRoom = false;
+function renderPhone(v) {
+  renderPhoneMain(v);
+  const rs = $('#rstage'); if (!rs) return;
+  const show = !!remoteTV && ['game', 'results', 'watch'].includes(v.screen);
+  rs.hidden = !show; document.body.classList.toggle('has-stage', show);
+  if (show) {
+    patch(rs, remoteTV);
+    const gid = v.game || (v.results && v.results.gameId);
+    const g = GAMES[gid]; if (g && g.afterRemoteTV) g.afterRemoteTV(rs, remoteTVX);
+  }
 }
 let lastScreen = '';
-function renderPhone(v) {
+function renderPhoneMain(v) {
   phoneShell(); phoneView = v;
   $('#pme').innerHTML = `${av(v.me)} <b>${esc(v.me.name)}</b> <span class="muted">${v.me.score || 0} pts</span>`;
   const main = $('#pmain');
@@ -302,7 +396,7 @@ function renderPhone(v) {
   main.dataset.screen = v.screen;
   if (v.screen === 'lobby') {
     const rank = v.night.findIndex(p => p.pid === v.me.pid) + 1;
-    patch(main, `<div class="center-stack"><div class="me-chr">${character(v.me.look, v.me.col, { pose: 'dance', seed: v.me.pid })}</div><h1 class="display">You’re in, ${esc(v.me.name)}!</h1><p class="lead">Look at the big screen. The host is picking a game.</p>
+    patch(main, `<div class="center-stack"><div class="me-chr">${character(v.me.look, v.me.col, { pose: 'dance', seed: v.me.pid })}</div><h1 class="display">You’re in, ${esc(v.me.name)}!</h1><p class="lead">${onlineRoom ? 'The host is picking a game. Get ready!' : 'Look at the big screen. The host is picking a game.'}</p>
       <p class="muted">${v.count} in the room${v.me.score ? ` · you’re #${rank} tonight` : ''}</p></div>`);
     return;
   }
@@ -311,7 +405,7 @@ function renderPhone(v) {
     const r = v.results, me = r.rows.find(x => x.pid === v.me.pid);
     const ff = r.forfeit && r.forfeit.pid === v.me.pid;
     patch(main, `<div class="result ${me && me.place === 0 ? 'good' : ''}"><div class="me-chr sm">${character(v.me.look, v.me.col, { pose: me && me.place === 0 ? 'up' : ff ? 'sad' : 'wave', seed: v.me.pid })}</div><p class="pill">${esc(r.gameName)}</p><h2>${me ? (me.place === 0 ? 'You won!' : `You came ${['1st', '2nd', '3rd'][me.place] || me.place + 1 + 'th'}`) : 'Game over'}</h2>
-      ${me && me.pts ? `<p class="big">+${me.pts} pts</p>` : ''}${ff ? `<div class="forfeit"><span>Your forfeit</span><b>${esc(r.forfeit.text)}</b></div>` : ''}<p class="muted">Look at the big screen</p></div>`);
+      ${me && me.pts ? `<p class="big">+${me.pts} pts</p>` : ''}${ff ? `<div class="forfeit"><span>Your forfeit</span><b>${esc(r.forfeit.text)}</b></div>` : ''}<p class="muted">${onlineRoom ? 'Full results above' : 'Look at the big screen'}</p></div>`);
     return;
   }
   const g = GAMES[v.game]; if (!g) return;
