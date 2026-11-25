@@ -6,8 +6,8 @@ import { GAMES } from './games/index.js';
 const BOT_NAMES = ['CPU Tunde', 'CPU Ngozi', 'CPU Musa', 'CPU Bisi', 'CPU Emeka'];
 
 export class Engine {
-  constructor({ solo = false, code = '', send = () => { }, onTV = () => { }, onSolo = null, onSoloFx = null }) {
-    Object.assign(this, { solo, code, send, onTV, onSolo, onSoloFx });
+  constructor({ solo = false, code = '', send = () => { }, sendMany = null, onTV = () => { }, onSolo = null, onSoloFx = null }) {
+    Object.assign(this, { solo, code, send, sendMany, onTV, onSolo, onSoloFx });
     this.players = []; this.phase = 'lobby'; this.gameId = null; this.game = null; this.gs = null;
     this.ctxCur = null; this.timers = {}; this.results = null; this.played = [];
   }
@@ -137,7 +137,11 @@ export class Engine {
         this._again = false;
         this.onTV();
         if (this.solo) { this.onSolo && this.onSolo(this.viewFor('me')); }
-        else for (const p of this.players) if (p.online && p.conn) this.send(p.conn, { t: 'view', now: Date.now(), v: this.viewFor(p.pid) });
+        else {
+          const now = Date.now(), batch = [];
+          for (const p of this.players) if (p.online && p.conn) batch.push([p.conn, { t: 'view', now, v: this.viewFor(p.pid) }]);
+          if (this.sendMany) this.sendMany(batch); else batch.forEach(([c, m]) => this.send(c, m));
+        }
       } while (this._again);
     } finally { this._syncing = false; }
   }

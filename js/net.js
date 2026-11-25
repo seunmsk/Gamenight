@@ -1,5 +1,9 @@
-// Transport layer. Default: PeerJS (WebRTC, no server of our own).
+// Transport layer.
+// Default: Supabase Realtime relay (works on any network: Wi-Fi, MTN, Airtel, Glo).
+// Fallback when no key is set: PeerJS (direct WebRTC).
 // ?net=local uses BroadcastChannel so you can test host + phones in tabs of one browser.
+import { SUPABASE_URL, SUPABASE_KEY } from './config.js';
+const SUPA_SRC = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';
 const PEER_SRC = 'https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js';
 const PREFIX = 'gamenight-ng-';
 export const useLocal = new URLSearchParams(location.search).get('net') === 'local';
@@ -22,7 +26,7 @@ export function makeCode() {
 }
 
 // Host: handlers {onOpen(connId), onData(connId,msg), onClose(connId)}
-export async function hostRoom(code, h) {
+async function peerHost(code, h) {
   if (useLocal) {
     const bc = new BroadcastChannel(PREFIX + code);
     const known = new Set();
@@ -35,6 +39,7 @@ export async function hostRoom(code, h) {
     return {
       code,
       send(connId, data) { bc.postMessage({ to: connId, from: 'host', data }); },
+      sendMany(list) { list.forEach(([c, d]) => bc.postMessage({ to: c, from: 'host', data: d })); },
       close() { bc.close(); }
     };
   }
@@ -66,7 +71,7 @@ export async function hostRoom(code, h) {
 }
 
 // Phone: handlers {onData(msg), onClose()}
-export async function joinRoom(code, h) {
+async function peerJoin(code, h) {
   code = code.toUpperCase();
   if (useLocal) {
     const id = 'c' + Math.random().toString(36).slice(2, 9);
@@ -98,3 +103,87 @@ export async function joinRoom(code, h) {
     });
   });
 }
+
+// ---------------- Supabase Realtime relay ----------------
+const useSupa = !useLocal && !!SUPABASE_KEY;
+let sbLoad = null, sbClient = null;
+function loadScript(src) {
+  return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('Could not load the connection library. Check your internet.')); document.head.appendChild(s); });
+}
+async function sb() {
+  if (!window.supabase) { sbLoad = sbLoad || loadScript(SUPA_SRC).catch(e => { sbLoad = null; throw e; }); await sbLoad; }
+  sbClient = sbClient || window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false, autoRefreshToken: false }, realtime: { params: { eventsPerSecond: 50 } } });
+  return sbClient;
+}
+const BAD = ['CHANNEL_ERROR', 'TIMED_OUT', 'CLOSED'];
+function presenceReady(ch, ms) {
+  return new Promise(res => { let t = setTimeout(res, ms); ch.on('presence', { event: 'sync' }, () => { clearTimeout(t); setTimeout(res, 150); }); });
+}
+
+async function supaHost(code, h) {
+  const c = await sb();
+  const ch = c.channel(PREFIX + code, { config: { broadcast: { self: false, ack: false }, presence: { key: 'host' } } });
+  const ready = presenceReady(ch, 2500);
+  ch.on('broadcast', { event: 'up' }, ({ payload }) => {
+    if (!payload || typeof payload.from !== 'string') return;
+    h.onData(payload.from, payload.data);
+  });
+  ch.on('presence', { event: 'leave' }, ({ key }) => { if (key && key !== 'host') h.onClose(key); });
+  return new Promise((resolve, reject) => {
+    let done = false;
+    const t = setTimeout(() => { if (!done) { done = true; c.removeChannel(ch); reject(new Error('Could not reach the game server. Check your internet and try again.')); } }, 20000);
+    ch.subscribe(async status => {
+      if (status === 'SUBSCRIBED' && !done) {
+        await ready;
+        const st = ch.presenceState();
+        if (st.host && st.host.length) { done = true; clearTimeout(t); c.removeChannel(ch); const e = new Error('Room code in use'); e.type = 'unavailable-id'; return reject(e); }
+        await ch.track({ host: true, t: Date.now() });
+        done = true; clearTimeout(t);
+        const post = payload => ch.send({ type: 'broadcast', event: 'down', payload });
+        resolve({
+          code,
+          send(connId, data) { post({ to: connId, data }); },
+          sendMany(list) { if (list.length) post({ many: list }); },
+          close() { try { c.removeChannel(ch); } catch (e) { } }
+        });
+      } else if (BAD.includes(status) && !done) { done = true; clearTimeout(t); try { c.removeChannel(ch); } catch (e) { } reject(new Error('Could not reach the game server. Check your internet and try again.')); }
+    });
+  });
+}
+
+async function supaJoin(code, h) {
+  code = code.toUpperCase();
+  const c = await sb();
+  const id = 'c' + Math.random().toString(36).slice(2, 10);
+  const ch = c.channel(PREFIX + code, { config: { broadcast: { self: false, ack: false }, presence: { key: id } } });
+  const ready = presenceReady(ch, 4000);
+  ch.on('broadcast', { event: 'down' }, ({ payload }) => {
+    if (!payload) return;
+    if (payload.many) { const m = payload.many.find(x => x[0] === id); if (m) h.onData(m[1]); return; }
+    if (payload.to === id || payload.to === '*') h.onData(payload.data);
+  });
+  return new Promise((resolve, reject) => {
+    let done = false, closed = false;
+    const fail = msg => { if (!done) { done = true; clearTimeout(t); try { c.removeChannel(ch); } catch (e) { } reject(new Error(msg)); } };
+    const t = setTimeout(() => fail('Could not reach the game server. Check your internet and try again.'), 20000);
+    ch.subscribe(async status => {
+      if (status === 'SUBSCRIBED' && !done) {
+        await ready;
+        const st = ch.presenceState();
+        if (!st.host || !st.host.length) return fail('No room with that code. Check the big screen.');
+        await ch.track({ phone: true });
+        done = true; clearTimeout(t);
+        resolve({
+          send(data) { ch.send({ type: 'broadcast', event: 'up', payload: { from: id, data } }); },
+          close() { closed = true; try { c.removeChannel(ch); } catch (e) { } }
+        });
+      } else if (BAD.includes(status)) {
+        if (!done) fail('Could not reach the game server. Check your internet and try again.');
+        else if (!closed) { closed = true; try { c.removeChannel(ch); } catch (e) { } h.onClose(); }
+      }
+    });
+  });
+}
+
+export const hostRoom = (code, h) => useSupa ? supaHost(code, h) : peerHost(code, h);
+export const joinRoom = (code, h) => useSupa ? supaJoin(code, h) : peerJoin(code, h);

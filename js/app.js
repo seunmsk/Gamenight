@@ -56,7 +56,7 @@ async function startHost(saved) {
   app.innerHTML = `<div class="center-stack fill">${logo('big')}<p class="lead">Opening the room…</p></div>`;
   keepAwake();
   let code = saved ? saved.code : makeCode(), tries = 0;
-  eng = new Engine({ code, send: (conn, msg) => room && room.send(conn, msg), onTV: renderHost });
+  eng = new Engine({ code, send: (conn, msg) => room && room.send(conn, msg), sendMany: list => room && (room.sendMany ? room.sendMany(list) : list.forEach(([c, m]) => room.send(c, m))), onTV: renderHost });
   window.__gamenight = eng;
   if (saved) eng.restore(saved);
   while (true) {
@@ -275,6 +275,7 @@ async function connect(code, name, col, look) {
 function lostConn() {
   if (reconnecting) return;
   reconnecting = true;
+  try { conn && conn.close(); } catch (e) { }
   if (!$('#reconn')) { const d = document.createElement('div'); d.id = 'reconn'; d.innerHTML = '<div><b>Reconnecting…</b><p>Keep this page open. If the host closed the room, go back.</p><button class="btn ghost" onclick="location.reload()">Go back</button></div>'; document.body.appendChild(d); }
   setTimeout(() => connect(joinInfo.code, joinInfo.name, joinInfo.col, joinInfo.look), 1500);
 }
