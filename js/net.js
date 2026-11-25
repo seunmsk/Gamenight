@@ -3,7 +3,7 @@
 // Fallback when no key is set: PeerJS (direct WebRTC).
 // ?net=local uses BroadcastChannel so you can test host + phones in tabs of one browser.
 import { SUPABASE_URL, SUPABASE_KEY } from './config.js';
-const SUPA_SRC = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';
+const SUPA_SRC = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
 const PEER_SRC = 'https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js';
 const PREFIX = 'gamenight-ng-';
 export const useLocal = new URLSearchParams(location.search).get('net') === 'local';
