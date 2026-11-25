@@ -369,8 +369,8 @@ body.solo.playing #app { max-width: 1100px; }
 .solo-main { flex: 1; display: flex; flex-direction: column; }
 .solo-stage { padding: 14px; flex: 0 1 auto; }
 .solo-stage .display { font-size: clamp(24px, 6vw, 44px); }
-.pad[hidden] { display: none; }
-.solo .pad .pq-text, .solo .pad .pq .qmeta { display: none; }
+.ctl[hidden] { display: none; }
+.solo .ctl .pq-text, .solo .ctl .pq .qmeta { display: none; }
 .solo .opts { grid-template-columns: 1fr; } .solo .opt { padding: 12px 14px; font-size: 18px; }
 .solo .pads.tf .pad { min-height: 80px; }
 .solo .whot-table .felt { min-height: 200px; } .solo .wcard.big { --w: 96px; } .solo .wcard.back { --w: 86px; }
@@ -472,11 +472,70 @@ body.tv .bar { top: 26px; }
 .rstage .timer.huge { font-size: 64px; }
 .rstage .results { gap: 12px; } .rstage .night { display: none; }
 body.has-stage:has(.drawpad) #rstage { display: none; }
-.has-stage .pmain .pq-text, .has-stage .pmain .pq .qmeta .pill, body.online .pad .pq-text, body.online .pad .pq .qmeta .pill { display: none; }
-body.online .pad { border-top: 1px solid var(--line); max-width: 640px; width: 100%; margin: 0 auto; }
-body.online .pad[hidden] { display: none; }
+.has-stage .pmain .pq-text, .has-stage .pmain .pq .qmeta .pill, body.online .ctl .pq-text, body.online .ctl .pq .qmeta .pill { display: none; }
+body.online .ctl { border-top: 1px solid var(--line); max-width: 640px; width: 100%; margin: 0 auto; }
+body.online .ctl[hidden] { display: none; }
 body.online .stage { padding: clamp(10px, 2vw, 28px); }
 @media (max-width: 600px) { body.tv .bar { gap: 8px; padding: 8px 10px; } body.tv #pcount { display: none; } body.tv .bar .iconbtn { padding: 4px 10px; font-size: 13px; min-height: 36px; } }
-.has-stage .pmain .dicebox, body.online .pad .dicebox { display: none; }
+.has-stage .pmain .dicebox, body.online .ctl .dicebox { display: none; }
 body.online .gamehead .rules { display: none; }
 @media (min-width: 900px) { body.online .gamehead .rules { display: inline; } }
+
+/* ===== compact one-screen layout for phones (online host + remote players) ===== */
+@media (max-width: 700px) {
+  body.online .bunting, body.has-stage .bunting { height: 14px; background-size: 64px 14px; position: static; }
+  body.online .bar { position: static; padding: 6px 10px; gap: 6px; flex-wrap: nowrap; overflow-x: auto; }
+  body.online .bar .logo { font-size: 15px; gap: .3em; flex: none; }
+  body.online .bar .ng { display: none; }
+  body.online .bar .roomcode { font-size: 13px; flex: none; }
+  body.online .bar .grow { display: none; }
+  body.online .bar .iconbtn { min-height: 32px; padding: 2px 10px; font-size: 12px; flex: none; }
+  .pbar { padding: 6px 12px; } .pbar .av { width: 30px; height: 30px; }
+  body.online .stage, .rstage { padding: 8px 10px 4px; flex: none; }
+  body.online .gamehead, .rstage .gamehead { display: none; }
+  body.online .ctl, .has-stage .pmain { padding: 8px 12px calc(90px + env(safe-area-inset-bottom)); gap: 8px; }
+  /* Whot */
+  body.online .whot-table, .rstage .whot-table { gap: 8px; }
+  body.online .seats, .rstage .seats { gap: 6px; }
+  body.online .seat, .rstage .seat { padding: 3px 10px 3px 3px; gap: 6px; font-size: 14px; }
+  body.online .seat .av, .rstage .seat .av { width: 30px; height: 30px; }
+  body.online .felt, .rstage .felt { min-height: 0; padding: 12px; gap: 28px; border-radius: 22px; box-shadow: inset 0 0 0 6px #5a3a1e, inset 0 0 30px #0008, 0 4px 0 #0006; }
+  body.online .wcard.big, .rstage .wcard.big { --w: 66px; }
+  body.online .wcard.back, .rstage .wcard.back { --w: 58px; }
+  body.online .wcard.back span, .rstage .wcard.back span { font-size: 13px; }
+  body.online .stackm small, .rstage .stackm small { font-size: 13px; }
+  body.online .log .old, .rstage .log .old { display: none; }
+  body.online .log p, .rstage .log p { font-size: 15px; }
+  body.online .ctl .ptop, .has-stage .pmain .ptop { display: none; }
+  body.online .ctl .hand .wcard, .has-stage .hand .wcard { --w: 52px; }
+  body.online .ctl .hand, .has-stage .hand { gap: 6px; padding: 8px 0 0; }
+  body.online .ctl .btn.market, .has-stage .btn.market { margin-top: 6px; min-height: 50px; }
+  /* Ludo */
+  body.online .ludo-wrap, .rstage .ludo-wrap { gap: 8px; }
+  body.online .ludo-board, .rstage .ludo-board { width: min(100%, 44vh); margin: 0 auto; }
+  body.online .ludo-side .seats.col, .rstage .ludo-side .seats.col { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+  body.online .ludo-side .dicebox, .rstage .ludo-side .dicebox { flex-direction: row; padding: 6px 12px; } 
+  body.online .die, .rstage .die, .has-stage .die { width: 46px; height: 46px; padding: 7px; border-radius: 10px; } 
+  body.online .die i, .rstage .die i { width: 8px; height: 8px; }
+  .has-stage .toklist .tokbtn, body.online .ctl .tokbtn { padding: 8px; }
+  /* Ayo: the board you tap is in your controls, so the shared screen shows scores only */
+  body.online #stage .ayo, .rstage .ayo { display: none; }
+  body.online #stage .ayo-wrap, .rstage .ayo-wrap { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 8px; }
+  body.online #stage .ayo-wrap .lead, .rstage .ayo-wrap .lead { width: 100%; text-align: center; font-size: 15px; margin: 0; }
+  /* Draw, photos, quiz */
+  body.online .draw-main .drawcv, .rstage .draw-main .drawcv { width: min(100%, calc(38vh * 4 / 3)); }
+  body.online .draw-side .mini-board, .rstage .draw-side .mini-board { display: none; }
+  body.online .photo-frame img, .rstage .photo-frame img { max-height: 36vh; }
+  body.online .quiz, .rstage .quiz { gap: 8px; }
+  body.online .opt, .rstage .opt { padding: 8px 12px; font-size: 16px; }
+  body.online .qfoot .answered, .rstage .qfoot .answered { display: none; }
+  body.online .teambar, .rstage .teambar { margin-bottom: 6px; } body.online .teambar > div:not(.vs), .rstage .teambar > div:not(.vs) { padding: 6px 12px; }
+  body.online .teamscores .ts, .rstage .teamscores .ts { padding: 6px 10px; }
+  body.online .timer.huge, .rstage .timer.huge { font-size: 54px; }
+}
+.pmain { align-items: stretch; } .pgame { width: 100%; }
+@media (max-width: 700px) {
+  .rstage .quiz .opts, body.online #stage .quiz .opts { display: none; }
+  .has-stage .pmain .pq .qmeta, body.online .ctl .pq .qmeta { display: none; }
+  .has-stage .pmain .pad, body.online .ctl .pad { min-height: 54px; padding: 8px 14px; font-size: 17px; }
+}

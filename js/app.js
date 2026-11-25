@@ -135,7 +135,7 @@ async function startHost(saved, opt = {}) {
   }
   eng.code = code;
   app.innerHTML = `${bunting()}<header class="bar">${logo()}<span class="roomcode">Room <b>${code}</b></span><span class="grow"></span><span id="pcount" class="muted"></span>${muteBtn()}<button class="iconbtn" data-ui="endgame" hidden>End game</button><button class="iconbtn" data-ui="leave">Close room</button></header>
-    <main id="stage" class="stage"></main>${online ? '<div id="pad" class="pmain pad" hidden></div>' : ''}<div id="modal"></div>`;
+    <main id="stage" class="stage"></main>${online ? '<div id="pad" class="pmain ctl" hidden></div>' : ''}<div id="modal"></div>`;
   delegate($('#stage'), a => eng.act('host', a));
   if (online) {
     delegate($('#pad'), a => eng.act(online.me.pid, a));
@@ -427,7 +427,7 @@ function startSolo(id, st) {
   const g = GAMES[id];
   document.body.className = 'phone solo playing';
   app.innerHTML = `<header class="pbar"><span class="gdot" style="--c:${g.color}">${g.glyph}</span><b>${esc(g.name)}</b><span class="grow"></span>${muteBtn()}<button class="iconbtn" id="squit">Quit</button></header>
-    <main class="solo-main"><div id="stage" class="stage solo-stage"></div><div id="pad" class="pmain pad"></div></main>${g.rules ? `<details class="rulesbox"><summary>Rules</summary><p>${esc(g.rules)}</p></details>` : ''}`;
+    <main class="solo-main"><div id="stage" class="stage solo-stage"></div><div id="pad" class="pmain ctl"></div></main>${g.rules ? `<details class="rulesbox"><summary>Rules</summary><p>${esc(g.rules)}</p></details>` : ''}`;
   keepAwake();
   const stage = $('#stage'), pad = $('#pad');
   const se = new Engine({
