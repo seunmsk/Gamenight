@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1a0f1f">
+<title>MSK's Game Night · RSVP</title>
+<meta name="description" content="MSK's Game Night, Naija style. Sunday 6 Dec 2026, 6–10pm. RSVP and tell us what you're bringing.">
+<meta property="og:title" content="MSK's Game Night · Naija style">
+<meta property="og:description" content="Sunday 6 Dec 2026 · 6–10pm sharp. RSVP and tell us what you're bringing.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Outfit:wght@400;600;700;800&family=Caveat:wght@700&display=swap">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231a0f1f'/%3E%3Ccircle cx='10' cy='16' r='5' fill='%23ff4f6d'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f5b301'/%3E%3Ccircle cx='22' cy='16' r='5' fill='%2316c2a3'/%3E%3C/svg%3E">
+<style>
+/* Same world as the Game Night app: aubergine party night, ankara pattern, bunting,
+   gold/coral/teal lights, army green for the host's touch, Unbounded + Outfit. */
+:root{color-scheme:dark;--bg:#1a0f1f;--bg2:#24152b;--card:#2e1b36;--chip:#3a2444;--line:#4a3054;--ink:#fff6ea;--soft:#c9b5cf;
+  --gold:#f5b301;--coral:#ff4f6d;--teal:#16c2a3;--blue:#4f8cff;--army:#4b5320;--armyL:#a3b06a;--good:#2fd06b}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 Outfit,system-ui,sans-serif;overflow-x:clip;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cg fill='none' stroke-width='2.2'%3E%3Cpath d='M48 6 66 24 48 42 30 24Z' stroke='%23f5b30122'/%3E%3Cpath d='M0 54 18 72 0 90M96 54 78 72 96 90' stroke='%2316c2a31f'/%3E%3Ccircle cx='48' cy='72' r='12' stroke='%23ff4f6d1f'/%3E%3C/g%3E%3C/svg%3E");background-size:96px 96px}
+.bunting{height:26px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='26' viewBox='0 0 120 26'%3E%3Cpath d='M0 2Q60 10 120 2' stroke='%23fff6' stroke-width='1.5' fill='none'/%3E%3Cpath d='M4 3h20L14 24Z' fill='%23ff4f6d'/%3E%3Cpath d='M34 5.5h20L44 26Z' fill='%23f5b301'/%3E%3Cpath d='M64 5.5h20L74 26Z' fill='%234b5320'/%3E%3Cpath d='M94 3h20l-10 21Z' fill='%2316c2a3'/%3E%3C/svg%3E") repeat-x 0 0/120px 26px}
+.wrap{max-width:620px;margin:0 auto;padding:6px 16px 56px}
+h2{font:800 clamp(22px,6vw,28px)/1.1 Unbounded,sans-serif;margin:0}
+.sub{color:var(--soft);margin:4px 0 0;font-size:15px}
+
+/* hero: about half a phone screen */
+.hero{text-align:center}
+.logo{display:inline-flex;flex-direction:column;align-items:center;margin-top:4px}
+.logo .msk{font:700 28px/1 Caveat,cursive;color:var(--gold);transform:rotate(-6deg);margin-bottom:-4px;align-self:flex-start;margin-left:6%}
+.logo .gn{font:800 clamp(34px,10.5vw,52px)/1 Unbounded,sans-serif;letter-spacing:-.02em;color:var(--gold);text-shadow:0 4px 0 #0006}
+.logo .ng{margin-top:6px;padding:.24em .6em .2em;font:800 12px/1 Unbounded,sans-serif;letter-spacing:.32em;color:#0b3d1f;border-radius:4px;transform:rotate(-2deg);align-self:flex-end;
+  background:linear-gradient(90deg,#0a8f3c 0 33.3%,#fff 33.3% 66.6%,#0a8f3c 66.6%);box-shadow:0 2px 0 #0006;text-shadow:0 0 2px #fff,0 0 2px #fff}
+.crowd{display:flex;justify-content:center;align-items:flex-end;height:92px;margin:6px 0 -4px}
+.crowd>div{width:58px;height:92px;margin:0 -5px;animation:hop 1.1s ease-in-out infinite;animation-delay:var(--d);transform-origin:bottom center;filter:drop-shadow(0 6px 4px #0007)}
+.crowd>div:nth-child(even){margin-bottom:6px}
+.crowd svg{width:100%;height:100%;display:block;overflow:visible}
+@keyframes hop{0%,100%{transform:translateY(0)}40%{transform:translateY(-8%) rotate(-3deg)}60%{transform:translateY(-3%) rotate(3deg)}}
+.lede{max-width:30em;margin:8px auto 0;color:var(--soft);font-size:15px;line-height:1.4}
+.facts{margin:10px auto 14px;max-width:30em;background:var(--army);border-radius:16px;padding:10px 14px;display:grid;gap:3px;text-align:left;box-shadow:0 5px 0 #2c3112}
+.facts div{color:#fff;font-weight:700;font-size:14px;line-height:1.35;display:grid;grid-template-columns:3.8em minmax(0,1fr);gap:8px}
+.facts b{color:var(--gold);font-weight:800}
+
+/* cards */
+.card{background:var(--card);border-radius:24px;box-shadow:0 6px 0 #0006,0 18px 40px #0007;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;inset:0 0 auto;height:10px;
+  background:linear-gradient(135deg,var(--k,var(--gold)) 25%,transparent 25%) -5px 0/14px 14px,linear-gradient(225deg,var(--k,var(--gold)) 25%,transparent 25%) -5px 0/14px 14px}
+.ticket{padding:28px 20px 24px;--k:var(--coral)}
+.cut{border-top:3px dashed var(--line);margin:16px -20px 4px}
+label.q{display:block;font-weight:800;margin:18px 0 8px}
+label.q small{font-weight:600;color:var(--soft)}
+input[type=text],input[type=tel],input[type=number],textarea{width:100%;font:600 16px Outfit,sans-serif;color:var(--ink);background:var(--chip);border:2px solid var(--line);border-radius:14px;padding:12px 14px;min-height:50px}
+textarea{min-height:76px;resize:vertical}
+input:focus,textarea:focus{outline:none;border-color:var(--gold)}
+button:focus-visible,.opt:focus-within span{outline:3px solid var(--gold);outline-offset:2px}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.opt{position:relative;display:block}
+.opt input{position:absolute;opacity:0;inset:0}
+.opt span{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:8px 10px;border:2px solid var(--line);border-radius:14px;background:var(--chip);font-weight:800;text-align:center;cursor:pointer;line-height:1.15;transition:transform .12s}
+.opt input:checked+span{background:var(--gold);border-color:var(--gold);color:#24120a;transform:translateY(-2px);box-shadow:0 4px 0 #a87600}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.grid .opt span{justify-content:flex-start;text-align:left}
+.grid svg{width:26px;height:26px;flex:none}
+.grid .opt input:checked+span{background:var(--teal);border-color:var(--teal);color:#032;box-shadow:0 4px 0 #0c7a66}
+.row{display:flex;gap:10px;align-items:center}
+.step{display:flex;align-items:center;border:2px solid var(--line);border-radius:14px;background:var(--chip);overflow:hidden}
+.step button{width:50px;height:50px;border:0;background:none;font:800 24px Outfit;color:var(--ink);cursor:pointer}
+.step output{width:44px;text-align:center;font-weight:800;font-size:19px}
+.box{margin-top:22px;border-radius:18px;padding:16px;position:relative}
+.box h3{font:800 18px/1.15 Unbounded,sans-serif;margin:0 0 4px}
+.ppt{background:#3b2350;border:2px solid #b45cff55}
+.ppt .opt input:checked+span{background:#b45cff;border-color:#b45cff;color:#fff;box-shadow:0 4px 0 #6d2ea8}
+.cash{background:#2f3016;border:2px solid #a3b06a55}
+.acct{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:12px 0;background:var(--bg2);border-radius:14px;padding:12px 14px}
+.acct b{font:800 20px Unbounded,sans-serif;letter-spacing:.04em;white-space:nowrap;color:var(--gold)}
+.acct small{display:block;color:var(--soft);font-weight:700}
+.btn{border:0;border-radius:999px;min-height:48px;padding:0 20px;font:800 16px Outfit;cursor:pointer}
+.ghost{background:var(--army);color:#fff;box-shadow:0 4px 0 #2c3112}
+.go{width:100%;margin-top:24px;min-height:62px;background:var(--gold);color:#24120a;font:800 20px Unbounded,sans-serif;box-shadow:0 5px 0 #a87600}
+.go:active{transform:translateY(3px);box-shadow:0 2px 0 #a87600}
+.go[disabled]{opacity:.6}
+.err{color:var(--coral);font-weight:800;margin:10px 0 0;min-height:1em}
+.done{padding:30px 20px;text-align:center;display:none;--k:var(--teal)}
+.done.on{display:block}
+.done .me{width:110px;height:170px;margin:0 auto;animation:hop 1s ease-in-out infinite;transform-origin:bottom center}
+.done .me svg{width:100%;height:100%;display:block;overflow:visible}
+.done .big{font:800 30px/1.1 Unbounded,sans-serif;color:var(--gold);margin:8px 0}
+.prog{padding:28px 20px 18px;margin-top:22px;--k:var(--armyL)}
+.prog ol{list-style:none;padding:0;margin:12px 0 0}
+.prog li{display:grid;grid-template-columns:4.4em minmax(0,1fr);gap:12px;padding:10px 0;border-top:2px dashed var(--line)}
+.prog li:first-child{border-top:0}
+.prog time{font:800 17px/1.3 Unbounded,sans-serif;color:var(--armyL);white-space:nowrap}
+.prog b{display:block;font-weight:800}
+.prog span{color:var(--soft);font-size:15px}
+.board{margin-top:22px;padding:28px 20px 22px;--k:var(--teal)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0}
+.stat{border-radius:16px;background:var(--chip);padding:10px 6px;text-align:center}
+.stat b{display:block;font:800 clamp(20px,6vw,28px)/1.1 Unbounded,sans-serif;color:var(--gold);white-space:nowrap}
+.stat span{font-size:13px;font-weight:700;color:var(--soft)}
+.bars{display:grid;gap:8px;margin:6px 0 18px}
+.bar{display:grid;grid-template-columns:8.5em minmax(0,1fr) 2em;gap:10px;align-items:center;font-weight:700;font-size:15px}
+.bar i{display:block;height:14px;border-radius:99px;background:var(--chip);overflow:hidden}
+.bar i em{display:block;height:100%;background:var(--teal);border-radius:99px}
+.bar b{text-align:right}
+.bar.zero{color:var(--soft)}
+ul.guests{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.guests li{display:flex;gap:12px;align-items:center;padding:8px 12px 8px 8px;border-radius:16px;background:var(--chip)}
+.av{flex:none;width:46px;height:46px;border-radius:50%;overflow:hidden;background:var(--c);box-shadow:inset 0 0 0 2px #fff3}
+.av svg{width:112%;height:112%;margin:-2% -6% 0;display:block}
+.guests .nm{font-weight:800}.guests .it{color:var(--soft);font-size:14px}
+.tag{font-size:12px;font-weight:800;padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:2px;background:var(--gold);color:#24120a}
+.tag.maybe{background:var(--line);color:var(--ink)}
+.empty{color:var(--soft);justify-content:center}
+.demo{display:none;margin:0 0 14px;padding:10px 14px;border-radius:12px;background:#f5b30122;color:#ffe7a6;font-size:14px;font-weight:700;text-align:center}
+.demo.on{display:block}
+.foot{color:var(--soft);text-align:center;font-size:14px;margin-top:22px}
+.foot a{color:var(--gold)}
+@media(max-width:420px){.seg .opt span{font-size:14px}.bar{grid-template-columns:7em minmax(0,1fr) 1.6em;font-size:14px}}
+@media(prefers-reduced-motion:reduce){.crowd>div,.done .me{animation:none}}
+</style>
+</head>
+<body>
+<div class="bunting" aria-hidden="true"></div>
+<div class="wrap">
+  <header class="hero">
+    <h1 class="logo" aria-label="MSK's Game Night, Naija style"><span class="msk">MSK's</span><span class="gn">Game Night</span><span class="ng">NAIJA</span></h1>
+    <div class="crowd" id="crowd" aria-hidden="true"></div>
+    <p class="lede" id="lede"></p>
+    <div class="facts" id="facts"></div>
+  </header>
+
+  <div class="demo" id="demo">Preview mode: RSVPs here are saved on this phone only.</div>
+
+  <form class="card ticket" id="form" novalidate>
+    <h2>You dey come?</h2>
+    <p class="sub">Drop your name and tell us what you're bringing. Everybody brings something or drops cash. Na the rule.</p>
+    <div class="cut"></div>
+
+    <label class="q" for="name">Your name</label>
+    <input type="text" id="name" maxlength="60" autocomplete="name" placeholder="e.g. Tolu Adeyemi">
+
+    <label class="q">Will you be there?</label>
+    <div class="seg" role="radiogroup">
+      <label class="opt"><input type="radio" name="status" value="yes" checked><span>I'm in!</span></label>
+      <label class="opt"><input type="radio" name="status" value="maybe"><span>Maybe</span></label>
+      <label class="opt"><input type="radio" name="status" value="no"><span>Can't make it</span></label>
+    </div>
+
+    <div id="comingBits">
+      <label class="q">Bringing anyone? <small>(plus ones)</small></label>
+      <div class="row"><div class="step"><button type="button" id="minus" aria-label="One less">−</button><output id="plus">0</output><button type="button" id="add" aria-label="One more">+</button></div></div>
+
+      <label class="q">What are you bringing? <small>(pick any, or drop cash below)</small></label>
+      <div class="grid" id="items"></div>
+
+      <label class="q" for="note">Details <small>(optional)</small></label>
+      <textarea id="note" maxlength="200" placeholder="e.g. 2 bottles of Chapman mix, 1 tray of puff-puff"></textarea>
+
+      <div class="box ppt">
+        <h3>PowerPoint Night</h3>
+        <p class="sub" style="margin:0">Make a 3–5 minute slideshow on anything funny and present it to everyone. "Why my ex is a red flag", "Ranking Lagos danfo drivers", anything goes.</p>
+        <label class="opt" style="margin-top:12px"><input type="checkbox" id="present"><span>I want to present!</span></label>
+        <div id="topicWrap" style="display:none">
+          <label class="q" for="topic">Your topic <small>(you can keep it a surprise)</small></label>
+          <input type="text" id="topic" maxlength="80" placeholder="e.g. Why jollof rice should be our national anthem">
+        </div>
+      </div>
+    </div>
+
+    <div class="box cash">
+      <h3>Drop cash instead (or as well)</h3>
+      <p class="sub" style="margin:0">Totally fine. Send it and we'll handle the shopping.</p>
+      <div class="acct" id="acct"></div>
+      <label class="q" for="cashAmt" style="margin-top:4px">I'm sending <small>(₦, optional)</small></label>
+      <input type="number" id="cashAmt" inputmode="numeric" min="0" step="500" placeholder="e.g. 10000">
+    </div>
+
+    <button class="btn go" id="go" type="submit">Count me in</button>
+    <p class="err" id="err" role="alert"></p>
+  </form>
+
+  <div class="card done" id="done">
+    <div class="me" id="doneChr"></div>
+    <div class="big" id="doneTitle">You're on the list!</div>
+    <p class="sub" id="doneMsg"></p>
+    <button class="btn ghost" id="again" type="button" style="margin-top:14px">RSVP for someone else</button>
+  </div>
+
+  <section class="card prog">
+    <h2>Program of events</h2>
+    <p class="sub">Starts 6pm sharp, ends 10pm. No African time.</p>
+    <ol id="prog"></ol>
+  </section>
+
+  <section class="card board">
+    <h2>Who's bringing what</h2>
+    <p class="sub">Check before you buy so we don't end up with 9 bottles of Coke and no ice.</p>
+    <div class="stats">
+      <div class="stat"><b id="sHeads">0</b><span>heads coming</span></div>
+      <div class="stat"><b id="sPpt">0</b><span>presenting</span></div>
+      <div class="stat"><b id="sCash">₦0</b><span>cash pledged</span></div>
+    </div>
+    <div class="bars" id="bars"></div>
+    <ul class="guests" id="guests"><li class="empty">Loading the list…</li></ul>
+  </section>
+
+  <p class="foot" id="foot"></p>
+</div>
+
+<script type="module">
+import { character } from '/js/characters.js';
+import { SUPABASE_URL, SUPABASE_KEY } from '/js/config.js';
+
+/* ====== EDIT THESE ====== */
+const EVENT = {
+  host: "MSK",
+  lede: "Phones out, games on. Naija games, trash talk, food and a PowerPoint Night.",
+  date: "Sunday, 6 Dec 2026",
+  time: "6–10pm sharp",
+  place: "38 Kola Motajo Close, Ilasan, Ikate (off Blenco)"
+};
+const PROGRAM = [
+  ["6:00", "Arrivals & warm-up", "Drinks, small chops, and everyone opens the Game Night link on their phone"],
+  ["6:30", "Icebreaker round", "Quick Naija trivia to get the room going"],
+  ["7:00", "Team games", "Split into teams: charades, Jollof Wars and more on the Game Night app"],
+  ["8:00", "Food break", "Pizza and refills. Trash talk allowed"],
+  ["8:30", "PowerPoint Night", "3–5 minute funny presentations. The room votes for the best one"],
+  ["9:20", "Grand finale", "Top teams face off for the night's bragging rights"],
+  ["9:45", "Winners & group photo", "Crown the champions and the best presenter"],
+  ["10:00", "Wrap up", "We end on time, just like we started"]
+];
+const BANK = { bank: "Opay", number: "9051134461", name: "Oluwaseun Zurab Mosaku" };
+/* ======================== */
+
+const ITEMS = [
+  ["soft","Soft drinks",'<path d="M9 3h8l-1 4h-6z" fill="#ff4f6d"/><path d="M8 8h10l-1.2 14H9.2z" fill="#4f8cff"/><path d="M9 12h8" stroke="#f5b301" stroke-width="2"/>'],
+  ["alcohol","Alcohol",'<path d="M11 2h4v5l2 3v12H9V10l2-3z" fill="#2f7a4f"/><rect x="9" y="13" width="8" height="5" fill="#f5b301"/>'],
+  ["pizza","Pizza",'<path d="M3 6c6-3 14-3 20 0L13 24z" fill="#f5b301"/><path d="M3 6c6-3 14-3 20 0" stroke="#c7961f" stroke-width="2.5" fill="none"/><circle cx="10" cy="10" r="1.8" fill="#ff4f6d"/><circle cx="15" cy="13" r="1.8" fill="#ff4f6d"/><circle cx="13" cy="18" r="1.5" fill="#ff4f6d"/>'],
+  ["chops","Small chops",'<path d="M4 22L22 4" stroke="#c7961f" stroke-width="2"/><circle cx="9" cy="17" r="3.4" fill="#ff4f6d"/><circle cx="13.5" cy="12.5" r="3.4" fill="#f5b301"/><circle cx="18" cy="8" r="3.4" fill="#ff4f6d"/>'],
+  ["snacks","Snacks / chin chin",'<path d="M6 9h14l-2 14H8z" fill="#ff4f6d"/><path d="M10 9v14M16 9v14" stroke="#fff" stroke-width="1.6"/><circle cx="9" cy="7" r="3" fill="#f5b301"/><circle cx="13" cy="5.5" r="3" fill="#f5b301"/><circle cx="17" cy="7" r="3" fill="#f5b301"/>'],
+  ["ice","Ice / water",'<path d="M13 3l8 4.5v9L13 21l-8-4.5v-9z" fill="#9fd8ff"/><path d="M13 12l8-4.5M13 12v9M13 12L5 7.5" stroke="#fff" stroke-width="1.5"/>'],
+  ["games","Cards / board game",'<rect x="3" y="7" width="12" height="16" rx="2" fill="#fff" stroke="#1a0f1f" stroke-width="1.6" transform="rotate(-10 9 15)"/><rect x="11" y="4" width="12" height="16" rx="2" fill="#f5b301" stroke="#1a0f1f" stroke-width="1.6"/>']
+];
+const LABEL = Object.fromEntries(ITEMS.map(i => [i[0], i[1]]));
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const naira = n => "₦" + Number(n || 0).toLocaleString("en-NG");
+const COLS = ["#ff4f6d", "#f5b301", "#16c2a3", "#4f8cff", "#b45cff", "#ff8a3d", "#2fd06b", "#ff5cc8"];
+const hashOf = s => { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) | 0; return Math.abs(h); };
+const lookFor = name => { const h = hashOf(name.trim().toLowerCase()); return [`${h % 8}-${(h >> 3) % 5}`, COLS[(h >> 6) % COLS.length]]; };
+
+/* header */
+const CROWD = [['4-0', '#b45cff', 'wave'], ['3-2', '#4f8cff', 'up'], ['0-1', '#ff4f6d', 'dance'], ['1-3', '#f5b301', 'mic'], ['6-4', '#2fd06b', 'dance'], ['7-2', '#ff5cc8', 'wave']];
+$("crowd").innerHTML = CROWD.map(([l, c, pose], i) => `<div style="--d:${i * 0.17}s">${character(l, c, { pose, seed: 'r' + i })}</div>`).join("");
+$("lede").textContent = EVENT.lede;
+$("prog").innerHTML = PROGRAM.map(([t, a, b]) => `<li><time>${esc(t)}</time><div><b>${esc(a)}</b><span>${esc(b)}</span></div></li>`).join("");
+$("facts").innerHTML = [["When", EVENT.date + (EVENT.time ? " · " + EVENT.time : "")], ["Where", EVENT.place], ["Host", EVENT.host]]
+  .filter(f => f[1]).map(f => `<div><b>${esc(f[0])}</b> ${esc(f[1])}</div>`).join("");
+$("foot").innerHTML = `Hosted by ${esc(EVENT.host)}. Bring your A-game. <br>On the night, play at <a href="/">${esc(location.host || 'gamenight')}</a>`;
+$("items").innerHTML = ITEMS.map(([k, l, svg]) => `<label class="opt"><input type="checkbox" name="items" value="${k}"><span><svg viewBox="0 0 26 26">${svg}</svg>${l}</span></label>`).join("");
+
+/* bank box */
+if (BANK.number) {
+  $("acct").innerHTML = `<div><small>${esc(BANK.bank)}</small><b>${esc(BANK.number)}</b><small>${esc(BANK.name)}</small></div><button type="button" class="btn ghost" id="copy">Copy number</button>`;
+  $("copy").onclick = async e => { try { await navigator.clipboard.writeText(BANK.number); e.target.textContent = "Copied!"; } catch { e.target.textContent = BANK.number; } setTimeout(() => e.target.textContent = "Copy number", 2000); };
+} else {
+  $("acct").innerHTML = `<div><b style="font-size:16px;letter-spacing:0">Account details coming soon</b><small>${esc(EVENT.host)} will share them on the group</small></div>`;
+}
+
+/* plus ones */
+let plus = 0;
+const setPlus = n => { plus = Math.max(0, Math.min(10, n)); $("plus").textContent = plus; };
+$("minus").onclick = () => setPlus(plus - 1);
+$("add").onclick = () => setPlus(plus + 1);
+
+$("present").addEventListener("change", () => { $("topicWrap").style.display = $("present").checked ? "" : "none"; });
+const status = () => document.querySelector("input[name=status]:checked").value;
+const syncStatus = () => {
+  const s = status();
+  $("comingBits").style.display = s === "no" ? "none" : "";
+  $("go").textContent = s === "yes" ? "Count me in" : s === "maybe" ? "Pencil me in" : "Send my regrets";
+};
+document.querySelectorAll("input[name=status]").forEach(r => r.addEventListener("change", syncStatus));
+
+/* storage: Supabase when configured and reachable, else this device */
+const LIVE = !!(SUPABASE_URL && SUPABASE_KEY) && !new URLSearchParams(location.search).has("demo");
+const LS = "gamenight_rsvps";
+const local = { get() { try { return JSON.parse(localStorage.getItem(LS)) || []; } catch { return []; } },
+                add(r) { try { const a = local.get(); a.push(r); localStorage.setItem(LS, JSON.stringify(a)); } catch {} } };
+const H = { apikey: SUPABASE_KEY, "Content-Type": "application/json" };
+if (SUPABASE_KEY && SUPABASE_KEY.startsWith("eyJ")) H.Authorization = "Bearer " + SUPABASE_KEY;
+const FIELDS = "name,status,plus_ones,items,note,cash_amount,presenting,created_at";
+let demo = !LIVE;
+
+async function load() {
+  if (demo) return local.get();
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 10000);
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/gamenight_rsvps?select=${FIELDS}&order=created_at.asc`, { headers: H, signal: ctl.signal });
+    if (!r.ok) throw new Error(r.status);
+    return await r.json();
+  } finally { clearTimeout(t); }
+}
+async function save(row) {
+  if (demo) { local.add({ ...row, created_at: new Date().toISOString() }); return; }
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/gamenight_rsvps`, { method: "POST", headers: { ...H, Prefer: "return=minimal" }, body: JSON.stringify(row) });
+  if (!r.ok) throw new Error("save " + r.status);
+}
+
+/* board */
+function avatar(name) { const [look, col] = lookFor(name || "?"); return `<span class="av" style="--c:${col}">${character(look, col, { crop: true, seed: name })}</span>`; }
+function render(rows) {
+  const going = rows.filter(r => r.status !== "no");
+  const yes = rows.filter(r => r.status === "yes");
+  $("sHeads").textContent = yes.reduce((n, r) => n + 1 + (r.plus_ones || 0), 0);
+  $("sPpt").textContent = going.filter(r => r.presenting).length;
+  $("sCash").textContent = naira(rows.reduce((n, r) => n + (r.cash_amount || 0), 0));
+  const counts = ITEMS.map(([k, l]) => [l, going.filter(r => (r.items || []).includes(k)).length]);
+  const max = Math.max(1, ...counts.map(c => c[1]));
+  $("bars").innerHTML = counts.map(([l, n]) => `<div class="bar${n ? "" : " zero"}"><span>${esc(l)}</span><i><em style="width:${n / max * 100}%"></em></i><b>${n}</b></div>`).join("");
+  const list = rows.slice().reverse();
+  $("guests").innerHTML = list.length ? list.map(r => {
+    const it = (r.items || []).map(k => LABEL[k]).filter(Boolean).join(", ");
+    const bits = [it, r.note, r.cash_amount ? "sending " + naira(r.cash_amount) : "", r.presenting ? "presenting: " + r.presenting : ""].filter(Boolean).join(" · ");
+    const tag = r.status === "yes" ? `<span class="tag">in${r.plus_ones ? " +" + r.plus_ones : ""}</span>` : r.status === "maybe" ? `<span class="tag maybe">maybe</span>` : `<span class="tag maybe">can't make it</span>`;
+    return `<li>${avatar(r.name)}<div><div class="nm">${esc(r.name)}${tag}</div><div class="it">${esc(bits || (r.status === "no" ? "Next time!" : "Coming through"))}</div></div></li>`;
+  }).join("") : `<li class="empty">No one yet. Be the first!</li>`;
+}
+async function refresh() {
+  try { render(await load()); }
+  catch { demo = true; $("demo").classList.add("on"); render(local.get()); }
+}
+if (demo) $("demo").classList.add("on");
+
+/* submit */
+$("form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const name = $("name").value.trim();
+  if (!name) { $("err").textContent = "Abeg, put your name first."; $("name").focus(); return; }
+  const s = status();
+  const picked = [...document.querySelectorAll("input[name=items]:checked")].length;
+  const cash = Number($("cashAmt").value) || 0;
+  if (s !== "no" && !picked && !cash) { $("err").textContent = "Abeg, pick something to bring or put a cash amount."; $("items").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+  const row = {
+    name, status: s,
+    plus_ones: s === "no" ? 0 : plus,
+    items: s === "no" ? [] : [...document.querySelectorAll("input[name=items]:checked")].map(c => c.value),
+    note: s === "no" ? null : ($("note").value.trim() || null),
+    cash_amount: Math.max(0, Math.round(cash)) || null,
+    presenting: s !== "no" && $("present").checked ? ($("topic").value.trim() || "Surprise topic") : null
+  };
+  $("err").textContent = ""; $("go").disabled = true;
+  try {
+    await save(row);
+    const [look, col] = lookFor(name);
+    $("doneChr").innerHTML = character(look, col, { pose: s === "no" ? "sad" : "up", seed: name });
+    $("doneTitle").textContent = s === "yes" ? `See you there, ${name.split(" ")[0]}!` : s === "maybe" ? "Pencilled in!" : "We'll miss you!";
+    $("doneMsg").textContent = s === "no" ? (row.cash_amount ? "Thanks for the cash support. We'll play a round for you." : "Thanks for letting us know.") : "You're on the list. Check the board below to see what everyone's bringing.";
+    $("form").style.display = "none"; $("done").classList.add("on");
+    $("done").scrollIntoView({ behavior: "smooth", block: "center" });
+    refresh();
+  } catch {
+    $("err").textContent = "Couldn't save that. Check your network and try again.";
+  } finally { $("go").disabled = false; }
+});
+$("again").onclick = () => {
+  $("form").reset(); setPlus(0); syncStatus(); $("topicWrap").style.display = "none";
+  $("done").classList.remove("on"); $("form").style.display = "";
+  $("form").scrollIntoView({ behavior: "smooth" });
+};
+
+syncStatus(); refresh();
+if (LIVE) setInterval(() => { if (!demo && !document.hidden) refresh(); }, 20000);
+</script>
+</body>
+</html>
