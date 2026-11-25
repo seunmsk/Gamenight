@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1a0f1f">
+<title>Host dashboard · MSK's Game Night</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Outfit:wght@400;600;700;800&display=swap">
+<style>
+:root{color-scheme:dark;--bg:#1a0f1f;--bg2:#24152b;--card:#2e1b36;--chip:#3a2444;--line:#4a3054;--ink:#fff6ea;--soft:#c9b5cf;
+  --gold:#f5b301;--coral:#ff4f6d;--teal:#16c2a3;--army:#4b5320;--armyL:#a3b06a;--good:#2fd06b;--purple:#b45cff}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 Outfit,system-ui,sans-serif;overflow-x:clip;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cg fill='none' stroke-width='2.2'%3E%3Cpath d='M48 6 66 24 48 42 30 24Z' stroke='%23f5b30122'/%3E%3Cpath d='M0 54 18 72 0 90M96 54 78 72 96 90' stroke='%2316c2a31f'/%3E%3Ccircle cx='48' cy='72' r='12' stroke='%23ff4f6d1f'/%3E%3C/g%3E%3C/svg%3E");background-size:96px 96px}
+.bunting{height:26px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='26' viewBox='0 0 120 26'%3E%3Cpath d='M0 2Q60 10 120 2' stroke='%23fff6' stroke-width='1.5' fill='none'/%3E%3Cpath d='M4 3h20L14 24Z' fill='%23ff4f6d'/%3E%3Cpath d='M34 5.5h20L44 26Z' fill='%23f5b301'/%3E%3Cpath d='M64 5.5h20L74 26Z' fill='%234b5320'/%3E%3Cpath d='M94 3h20l-10 21Z' fill='%2316c2a3'/%3E%3C/svg%3E") repeat-x 0 0/120px 26px}
+.wrap{max-width:980px;margin:0 auto;padding:10px 16px 56px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+header h1{font:800 clamp(22px,5.5vw,32px)/1.1 Unbounded,sans-serif;margin:0;flex:1 1 auto}
+header h1 small{display:block;font:700 14px Outfit,system-ui,sans-serif;color:var(--gold);letter-spacing:.02em}
+.updated{color:var(--soft);font-size:13px;width:100%}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:999px;min-height:46px;padding:0 18px;font:800 15px Outfit,system-ui,sans-serif;cursor:pointer;color:var(--ink);background:var(--chip);box-shadow:0 4px 0 #0006;text-decoration:none}
+.btn.gold{background:var(--gold);color:#24120a;box-shadow:0 4px 0 #a87600}
+.btn.wa{background:#25d366;color:#04310f;box-shadow:0 4px 0 #128c43}
+.btn:active{transform:translateY(2px)}
+.btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.card{background:var(--card);border-radius:22px;padding:24px 18px 18px;box-shadow:0 6px 0 #0006;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;inset:0 0 auto;height:10px;
+  background:linear-gradient(135deg,var(--k,var(--gold)) 25%,transparent 25%) -5px 0/14px 14px,linear-gradient(225deg,var(--k,var(--gold)) 25%,transparent 25%) -5px 0/14px 14px}
+.card h2{font:800 19px/1.2 Unbounded,sans-serif;margin:0 0 10px}
+.wide{grid-column:1/-1}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;--k:var(--coral)}
+.kpi{background:var(--chip);border-radius:16px;padding:12px 8px;text-align:center}
+.kpi b{display:block;font:800 clamp(22px,5vw,34px)/1.1 Unbounded,sans-serif;color:var(--gold);white-space:nowrap}
+.kpi span{font-size:13px;font-weight:700;color:var(--soft)}
+.kpi.main b{color:var(--good)}
+.shop{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.shop li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--chip);border-radius:14px;padding:10px 12px}
+.shop .dot{width:14px;height:14px;border-radius:50%;background:var(--good)}
+.shop li.miss .dot{background:var(--coral);box-shadow:0 0 0 4px #ff4f6d33}
+.shop b{display:block}
+.shop small{color:var(--soft);font-size:13px}
+.shop .n{font:800 18px Unbounded,sans-serif;color:var(--gold)}
+.shop li.miss .n{color:var(--coral);font:800 13px Outfit,system-ui,sans-serif;text-transform:uppercase;letter-spacing:.06em}
+ol.ppt{margin:0;padding:0;list-style:none;display:grid;gap:8px;counter-reset:p}
+ol.ppt li{counter-increment:p;display:grid;grid-template-columns:2.2em minmax(0,1fr);gap:10px;align-items:center;background:var(--chip);border-radius:14px;padding:10px 12px}
+ol.ppt li::before{content:counter(p);font:800 18px Unbounded,sans-serif;color:var(--purple);text-align:center}
+ol.ppt small{display:block;color:var(--soft)}
+.cashlist{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.cashlist li{display:flex;justify-content:space-between;gap:10px;background:var(--chip);border-radius:12px;padding:8px 12px;font-weight:700}
+.cashlist b{color:var(--armyL);white-space:nowrap}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin:-2px 0 12px}
+.seg{display:inline-flex;background:var(--chip);border-radius:999px;padding:4px;gap:4px;flex-wrap:wrap}
+.seg button{border:0;background:none;color:var(--soft);font:800 14px Outfit,system-ui,sans-serif;padding:8px 14px;border-radius:999px;cursor:pointer;min-height:38px}
+.seg button.on{background:var(--gold);color:#24120a}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{text-align:left;color:var(--soft);font-size:13px;font-weight:700;padding:8px;border-bottom:2px solid var(--line);white-space:nowrap}
+td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+td.num{text-align:right;white-space:nowrap}
+td.nm{font-weight:800;white-space:nowrap}
+.tag{font-size:12px;font-weight:800;padding:2px 8px;border-radius:99px;background:var(--gold);color:#24120a;white-space:nowrap}
+.tag.maybe{background:var(--line);color:var(--ink)}.tag.no{background:#5a1d2a;color:#ffc2cc}
+.muted{color:var(--soft)}
+.empty{color:var(--soft);text-align:center;padding:16px}
+.err{display:none;background:#5a1d2a;color:#ffd6dc;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-weight:700}
+.err.on{display:block}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,140px);background:var(--gold);color:#24120a;padding:10px 18px;border-radius:999px;font-weight:800;transition:transform .25s;z-index:9}
+#toast.show{transform:translate(-50%,0)}
+.fallback{display:none;margin-top:10px}.fallback.on{display:block}
+.fallback textarea{width:100%;min-height:200px;background:var(--chip);color:var(--ink);border:2px solid var(--line);border-radius:14px;padding:10px;font:14px/1.4 Outfit,system-ui,sans-serif}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .stack thead{display:none}.stack tr{display:grid;padding:10px 0;border-bottom:1px solid var(--line)}.stack td{border:0;padding:2px 0;text-align:left}
+  .stack td[data-l]::before{content:attr(data-l) ": ";color:var(--soft);font-weight:700}.stack td.nm::before{content:none}}
+</style>
+</head>
+<body>
+<div class="bunting" aria-hidden="true"></div>
+<div class="wrap">
+  <header>
+    <h1><small>MSK's Game Night · host view</small>Who's coming</h1>
+    <button class="btn wa" id="copyWa" type="button">Copy for WhatsApp</button>
+    <button class="btn" id="refresh" type="button">Refresh</button>
+    <a class="btn gold" href="../">RSVP page</a>
+    <p class="updated" id="updated">Loading…</p>
+  </header>
+  <div class="err" id="err"></div>
+  <div class="fallback" id="fallback"><p class="muted">Your browser blocked copying. Long-press the text below, Select all, then Copy.</p><textarea id="waText" readonly></textarea></div>
+
+  <div class="grid">
+    <section class="card wide"><div class="kpis" id="kpis"></div></section>
+
+    <section class="card" style="--k:var(--teal)">
+      <h2>Shopping checklist</h2>
+      <ul class="shop" id="shop"></ul>
+    </section>
+
+    <section class="card" style="--k:var(--purple)">
+      <h2>PowerPoint Night line-up</h2>
+      <div class="tools"><button class="btn" id="shuffle" type="button">Shuffle order</button><button class="btn" id="signup" type="button">Sign-up order</button></div>
+      <ol class="ppt" id="ppt"></ol>
+      <h2 style="margin-top:20px">Cash pledged</h2>
+      <ul class="cashlist" id="cash"></ul>
+    </section>
+
+    <section class="card wide" style="--k:var(--armyL)">
+      <h2>Guest list</h2>
+      <div class="tools"><div class="seg" id="filter">
+        <button data-f="all" class="on">Everyone</button><button data-f="yes">Coming</button><button data-f="maybe">Maybe</button><button data-f="no">Not coming</button>
+      </div></div>
+      <div class="scroll"><table class="stack"><thead><tr><th>Name</th><th>Status</th><th>Plus ones</th><th>Bringing</th><th>Cash</th><th>RSVP'd</th></tr></thead><tbody id="rows"></tbody></table></div>
+    </section>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script type="module">
+import { SUPABASE_URL, SUPABASE_KEY } from '/js/config.js';
+const EVENT = { title: "MSK's Game Night", when: "Sunday, 6 Dec 2026 · 6–10pm sharp", where: "38 Kola Motajo Close, Ilasan, Ikate (off Blenco)" };
+const ITEMS = [["soft", "Soft drinks"], ["alcohol", "Alcohol"], ["pizza", "Pizza"], ["chops", "Small chops"], ["snacks", "Snacks / chin chin"], ["ice", "Ice / water"], ["games", "Cards / board game"]];
+const LABEL = Object.fromEntries(ITEMS);
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const naira = n => "₦" + Number(n || 0).toLocaleString("en-NG");
+const H = { apikey: SUPABASE_KEY };
+if (SUPABASE_KEY.startsWith("eyJ")) H.Authorization = "Bearer " + SUPABASE_KEY;
+let rows = [], filter = "all", pptOrder = null;
+
+function toast(m) { const t = $("toast"); t.textContent = m; t.classList.add("show"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 2200); }
+function ago(iso) {
+  const d = new Date(iso); if (isNaN(d)) return "";
+  return d.toLocaleString("en-NG", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
+}
+
+async function load() {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/gamenight_rsvps?select=name,status,plus_ones,items,note,cash_amount,presenting,created_at&order=created_at.asc`, { headers: H });
+    if (!r.ok) throw new Error(r.status === 404 ? "The RSVP table doesn't exist yet. Run the SQL setup in Supabase first." : "Supabase said " + r.status);
+    rows = await r.json();
+    $("err").classList.remove("on");
+    render();
+    $("updated").textContent = "Updated " + new Date().toLocaleTimeString("en-NG", { hour: "numeric", minute: "2-digit" }) + " · refreshes every 20 seconds";
+  } catch (e) {
+    $("err").textContent = "Couldn't load RSVPs. " + (e.message || "Check your network.");
+    $("err").classList.add("on");
+    $("updated").textContent = "Not loaded";
+  }
+}
+
+function render() {
+  const yes = rows.filter(r => r.status === "yes"), maybe = rows.filter(r => r.status === "maybe"), no = rows.filter(r => r.status === "no");
+  const going = rows.filter(r => r.status !== "no");
+  const heads = yes.reduce((n, r) => n + 1 + (r.plus_ones || 0), 0);
+  const maybeHeads = maybe.reduce((n, r) => n + 1 + (r.plus_ones || 0), 0);
+  const cash = rows.reduce((n, r) => n + (r.cash_amount || 0), 0);
+  const presenters = going.filter(r => r.presenting);
+  $("kpis").innerHTML = [
+    ["main", heads, "heads coming"], ["", maybeHeads, "maybe"], ["", no.length, "can't make it"], ["", naira(cash), "cash pledged"], ["", presenters.length, "presenting"]
+  ].map(([c, v, l]) => `<div class="kpi ${c}"><b>${esc(v)}</b><span>${l}</span></div>`).join("");
+
+  $("shop").innerHTML = ITEMS.map(([k, l]) => {
+    const who = going.filter(r => (r.items || []).includes(k));
+    return `<li class="${who.length ? "" : "miss"}"><i class="dot"></i><div><b>${esc(l)}</b><small>${who.length ? who.map(r => esc(r.name) + (r.status === "maybe" ? " (maybe)" : "")).join(", ") : "Nobody yet"}</small></div><span class="n">${who.length || "Missing"}</span></li>`;
+  }).join("");
+
+  const list = pptOrder ? pptOrder.map(n => presenters.find(p => p.name + p.created_at === n)).filter(Boolean).concat(presenters.filter(p => !pptOrder.includes(p.name + p.created_at))) : presenters;
+  $("ppt").innerHTML = list.length ? list.map(r => `<li><div><b>${esc(r.name)}</b><small>${esc(r.presenting)}${r.status === "maybe" ? " · maybe coming" : ""}</small></div></li>`).join("") : `<li class="empty" style="display:block">No presenters yet</li>`;
+
+  const payers = rows.filter(r => r.cash_amount);
+  $("cash").innerHTML = payers.length ? payers.map(r => `<li><span>${esc(r.name)}</span><b>${naira(r.cash_amount)}</b></li>`).join("") + `<li><span>Total</span><b>${naira(cash)}</b></li>` : `<li class="muted">No cash pledges yet</li>`;
+
+  const shown = rows.filter(r => filter === "all" || r.status === filter).slice().reverse();
+  const tag = s => s === "yes" ? '<span class="tag">Coming</span>' : s === "maybe" ? '<span class="tag maybe">Maybe</span>' : '<span class="tag no">Not coming</span>';
+  $("rows").innerHTML = shown.length ? shown.map(r => {
+    const items = (r.items || []).map(k => LABEL[k]).filter(Boolean).join(", ");
+    const bring = [items, r.note].filter(Boolean).join(" · ");
+    return `<tr><td class="nm">${esc(r.name)}</td><td data-l="Status">${tag(r.status)}</td><td data-l="Plus ones" class="num">${r.plus_ones || 0}</td><td data-l="Bringing">${esc(bring || "—")}${r.presenting ? `<br><span class="muted">Presenting: ${esc(r.presenting)}</span>` : ""}</td><td data-l="Cash" class="num">${r.cash_amount ? naira(r.cash_amount) : "—"}</td><td data-l="RSVP'd" class="muted">${esc(ago(r.created_at))}</td></tr>`;
+  }).join("") : `<tr><td colspan="6" class="empty">Nobody here yet</td></tr>`;
+}
+
+function waText() {
+  const yes = rows.filter(r => r.status === "yes"), maybe = rows.filter(r => r.status === "maybe");
+  const going = rows.filter(r => r.status !== "no");
+  const heads = yes.reduce((n, r) => n + 1 + (r.plus_ones || 0), 0);
+  const line = r => `${r.name}${r.plus_ones ? " +" + r.plus_ones : ""}${(r.items || []).length ? " – " + r.items.map(k => LABEL[k]).filter(Boolean).join(", ") : ""}${r.cash_amount ? " – " + naira(r.cash_amount) : ""}`;
+  const missing = ITEMS.filter(([k]) => !going.some(r => (r.items || []).includes(k))).map(([, l]) => l);
+  const presenters = going.filter(r => r.presenting);
+  let t = `*${EVENT.title}* 🎲\n${EVENT.when}\n${EVENT.where}\n\n*Coming (${heads})*\n`;
+  t += yes.length ? yes.map((r, i) => `${i + 1}. ${line(r)}`).join("\n") : "Nobody yet";
+  if (maybe.length) t += `\n\n*Maybe*\n` + maybe.map(r => `• ${line(r)}`).join("\n");
+  if (presenters.length) t += `\n\n*PowerPoint Night* 🎤\n` + presenters.map(r => `• ${r.name}: ${r.presenting}`).join("\n");
+  t += missing.length ? `\n\n*Still needed:* ${missing.join(", ")}` : `\n\n*Everything on the list is covered* ✅`;
+  t += `\n\nRSVP here: ${location.origin}/rsvp/`;
+  return t;
+}
+
+$("copyWa").onclick = async () => {
+  const t = waText();
+  try { await navigator.clipboard.writeText(t); toast("Copied! Paste it in your WhatsApp group"); $("fallback").classList.remove("on"); }
+  catch { $("waText").value = t; $("fallback").classList.add("on"); $("waText").focus(); $("waText").select(); }
+};
+$("refresh").onclick = () => { load(); toast("Refreshed"); };
+$("shuffle").onclick = () => {
+  const p = rows.filter(r => r.status !== "no" && r.presenting).map(r => r.name + r.created_at);
+  for (let i = p.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [p[i], p[j]] = [p[j], p[i]]; }
+  pptOrder = p; render();
+};
+$("signup").onclick = () => { pptOrder = null; render(); };
+$("filter").onclick = e => { const b = e.target.closest("button"); if (!b) return; filter = b.dataset.f; $("filter").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b)); render(); };
+
+load();
+setInterval(() => { if (!document.hidden) load(); }, 20000);
+</script>
+</body>
+</html>
