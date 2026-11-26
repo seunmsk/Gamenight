@@ -3,6 +3,7 @@ import { hostRoom, joinRoom, makeCode, useLocal } from './net.js';
 import { Engine } from './engine.js';
 import { character, mc, STYLES, SKINS } from './characters.js';
 import { GAMES, ORDER } from './games/index.js';
+import { startAds, currentAd, adCount, adIndex, ADS_CONTACT } from './ads.js';
 
 const $ = s => document.querySelector(s);
 const app = $('#app');
@@ -143,6 +144,7 @@ async function startHost(saved, opt = {}) {
   }
   app.addEventListener('click', hostUI);
   loadQR().then(() => renderHost());
+  startAds(() => { if (eng.phase !== 'game' && eng.phase !== 'results') renderHost(); });
   eng.saveExtra = online ? { online: true, me: online.me } : null;
   eng.save(); renderHost();
 }
@@ -219,10 +221,20 @@ function lobbyTV() {
       <div class="ggrid">${ORDER.map(g => `<button class="gtile ${eng.played.includes(g.id) ? 'done' : ''}" style="--c:${g.color}" data-ui="setup" data-id="${g.id}"><span class="gdot">${g.glyph}</span><b>${esc(g.name)}</b><span>${esc(g.blurb)}</span><em>${esc(g.players)}</em></button>`).join('')}
         <div class="gtile soon"><span class="gdot">£</span><b>Lagos Landlord</b><span>Buy Lekki, dodge omo-onile. Coming soon.</span></div></div>
     </section>
-    <section class="night">
+    <div class="side"><section class="night">
       <h2>Tonight’s leaderboard</h2>
       ${anyScore ? `<ol>${night.map(p => `<li>${av(p, 'sm')}<span>${esc(p.name)}</span><b>${p.score}</b></li>`).join('')}</ol><button class="linkbtn" data-ui="reset">Reset scores</button>` : '<p class="muted">Win games to collect points: 3 for first, 2 for second, 1 for third.</p>'}
-    </section></div>`;
+    </section>${adSlot()}</div></div>`;
+}
+
+function adSlot() {
+  const a = currentAd();
+  if (!a) return `<aside class="adslot house"><span class="adtag">Ad space</span><b>Your ad here</b><p>${esc(ADS_CONTACT)}</p></aside>`;
+  const link = /^https:\/\//.test(a.link || '') ? a.link : '';
+  const img = /^https:\/\//.test(a.image_url || '') ? `<img src="${esc(a.image_url)}" alt="">` : '';
+  const qr = link && window.qrcode ? `<div class="adqr">${qrSVG(link)}</div>` : '';
+  const dots = adCount() > 1 ? `<div class="addots">${Array.from({ length: adCount() }, (_, i) => `<i class="${i === adIndex() ? 'on' : ''}"></i>`).join('')}</div>` : '';
+  return `<aside class="adslot"><span class="adtag">Sponsored</span>${img}<div class="adtext"><b>${esc(a.title)}</b>${a.body ? `<p>${esc(a.body)}</p>` : ''}</div>${qr || link ? `<div class="adlink">${qr}<span>${esc(link.replace(/^https:\/\/(www\.)?/, '').replace(/\/$/, ''))}</span></div>` : ''}${dots}</aside>`;
 }
 
 function setupDefaults(g, solo) {

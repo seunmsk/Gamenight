@@ -131,7 +131,26 @@ body.tv { font-size: clamp(16px, 1.2vw, 22px); }
 .night li { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 12px; background: #ffffff08; }
 .night li:first-child { background: #f5b30126; }
 .night li > span:not(.av) { flex: 1; font-weight: 600; } .night li b { font-family: var(--disp); color: var(--gold); }
-@media (max-width: 1100px) { .lobby { grid-template-columns: 1fr 1.6fr; } .night { grid-column: 1 / -1; } }
+.side { display: flex; flex-direction: column; gap: clamp(14px, 2vw, 28px); min-width: 0; }
+.adslot { position: relative; background: var(--card); border-radius: 24px; overflow: hidden; box-shadow: inset 0 0 0 2px #ffffff10, 0 6px 0 #0005; display: flex; flex-direction: column; animation: adin .5s ease; }
+.adslot img { display: block; width: 100%; max-height: 300px; object-fit: cover; background: var(--bg2); }
+.adtag { position: absolute; top: 10px; left: 10px; z-index: 1; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: #1a0f1fcc; color: var(--mute); }
+.adtext { padding: 14px 18px 4px; }
+.adtext b { display: block; font-family: var(--disp); font-size: clamp(17px, 1.4vw, 22px); line-height: 1.15; }
+.adtext p { margin: 6px 0 0; color: var(--mute); font-size: 15px; }
+.adlink { display: flex; align-items: center; gap: 12px; padding: 10px 18px 16px; }
+.adlink span { font-weight: 700; color: var(--gold); font-size: 14px; word-break: break-all; }
+.adqr { flex: none; width: 76px; background: #fff; padding: 6px; border-radius: 10px; }
+.adqr svg { display: block; width: 100%; height: auto; }
+.addots { display: flex; gap: 6px; justify-content: center; padding: 0 0 12px; }
+.addots i { width: 7px; height: 7px; border-radius: 50%; background: var(--line); }
+.addots i.on { background: var(--gold); }
+.adslot.house { padding: 40px 18px 18px; border: 2px dashed var(--line); background: transparent; box-shadow: none; }
+.adslot.house b { font-family: var(--disp); font-size: 18px; }
+.adslot.house p { margin: 6px 0 0; color: var(--mute); font-size: 14px; }
+@keyframes adin { from { opacity: 0; transform: translateY(6px); } }
+@media (prefers-reduced-motion: reduce) { .adslot { animation: none; } }
+@media (max-width: 1100px) { .lobby { grid-template-columns: 1fr 1.6fr; } .side { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); align-items: start; } }
 @media (max-width: 720px) { .lobby { grid-template-columns: 1fr; } .joincard { position: static; } }
 
 /* modal */

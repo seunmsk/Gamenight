@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1a0f1f">
+<title>Ads · Game Night admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Outfit:wght@400;600;700;800&display=swap">
+<style>
+:root{color-scheme:dark;--bg:#1a0f1f;--bg2:#24152b;--card:#2e1b36;--chip:#3a2444;--line:#4a3054;--ink:#fff6ea;--soft:#c9b5cf;
+  --gold:#f5b301;--coral:#ff4f6d;--teal:#16c2a3;--army:#4b5320;--armyL:#a3b06a;--good:#2fd06b}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 Outfit,system-ui,sans-serif;overflow-x:clip}
+.bunting{height:26px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='26' viewBox='0 0 120 26'%3E%3Cpath d='M0 2Q60 10 120 2' stroke='%23fff6' stroke-width='1.5' fill='none'/%3E%3Cpath d='M4 3h20L14 24Z' fill='%23ff4f6d'/%3E%3Cpath d='M34 5.5h20L44 26Z' fill='%23f5b301'/%3E%3Cpath d='M64 5.5h20L74 26Z' fill='%234b5320'/%3E%3Cpath d='M94 3h20l-10 21Z' fill='%2316c2a3'/%3E%3C/svg%3E") repeat-x 0 0/120px 26px}
+.wrap{max-width:980px;margin:0 auto;padding:10px 16px 56px}
+header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 16px}
+h1{font:800 clamp(22px,5.5vw,30px)/1.1 Unbounded,sans-serif;margin:0;flex:1 1 auto}
+h1 small{display:block;font:700 14px Outfit,system-ui,sans-serif;color:var(--gold)}
+h2{font:800 19px/1.2 Unbounded,sans-serif;margin:0 0 12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:999px;min-height:46px;padding:0 18px;font:800 15px Outfit,system-ui,sans-serif;cursor:pointer;color:var(--ink);background:var(--chip);box-shadow:0 4px 0 #0006;text-decoration:none}
+.btn.gold{background:var(--gold);color:#24120a;box-shadow:0 4px 0 #a87600}
+.btn.bad{background:#5a1d2a;color:#ffd6dc}
+.btn.sm{min-height:38px;padding:0 14px;font-size:14px}
+.btn:active{transform:translateY(2px)}.btn:disabled{opacity:.5}
+.btn:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.card{background:var(--card);border-radius:22px;padding:20px 18px;box-shadow:0 6px 0 #0006;margin-bottom:16px}
+label{display:block;font-weight:800;margin:14px 0 6px}
+label small{font-weight:600;color:var(--soft)}
+input[type=text],input[type=email],input[type=password],input[type=url],input[type=number],input[type=date],textarea{width:100%;font:600 16px Outfit,sans-serif;color:var(--ink);background:var(--chip);border:2px solid var(--line);border-radius:14px;padding:11px 14px;min-height:48px;color-scheme:dark}
+textarea{min-height:70px;resize:vertical}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}
+.check{display:flex;align-items:center;gap:10px;font-weight:800;margin-top:16px}
+.check input{width:22px;height:22px;accent-color:var(--gold)}
+.err{display:none;background:#5a1d2a;color:#ffd6dc;border-radius:14px;padding:10px 14px;margin:12px 0 0;font-weight:700}
+.err.on{display:block}
+.muted{color:var(--soft)}
+.layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;align-items:start}
+.list{display:grid;gap:10px}
+.ad{display:grid;grid-template-columns:84px minmax(0,1fr);gap:12px;background:var(--chip);border-radius:16px;padding:10px;align-items:center}
+.ad .th{width:84px;height:64px;border-radius:10px;background:var(--bg2) center/cover no-repeat;display:grid;place-items:center;color:var(--soft);font-size:12px}
+.ad b{display:block;line-height:1.2}
+.ad small{color:var(--soft);display:block}
+.ad .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
+.st{display:inline-block;font-size:12px;font-weight:800;padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:2px}
+.st.live{background:var(--good);color:#062}.st.soon{background:var(--gold);color:#24120a}.st.off,.st.ended{background:var(--line);color:var(--ink)}
+.drop{border:2px dashed var(--line);border-radius:14px;padding:14px;text-align:center;color:var(--soft);cursor:pointer;position:relative}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.drop img{display:block;max-width:100%;max-height:180px;margin:0 auto 8px;border-radius:10px}
+/* preview: same look as the TV slot */
+.tv{background:#1a0f1f;border-radius:18px;padding:14px}
+.adslot{position:relative;background:var(--card);border-radius:24px;overflow:hidden;box-shadow:inset 0 0 0 2px #ffffff10,0 6px 0 #0005}
+.adslot img{display:block;width:100%;max-height:300px;object-fit:cover;background:var(--bg2)}
+.adtag{position:absolute;top:10px;left:10px;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;background:#1a0f1fcc;color:var(--soft)}
+.adtext{padding:14px 18px 4px}.adtext b{display:block;font:800 19px/1.15 Unbounded,sans-serif}.adtext p{margin:6px 0 0;color:var(--soft);font-size:15px}
+.adlink{display:flex;align-items:center;gap:12px;padding:10px 18px 16px}.adlink span{font-weight:700;color:var(--gold);font-size:14px;word-break:break-all}
+.adqr{flex:none;width:64px;height:64px;background:#fff;border-radius:10px;display:grid;place-items:center;color:#1a0f1f;font:800 11px Outfit}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,140px);background:var(--gold);color:#24120a;padding:10px 18px;border-radius:999px;font-weight:800;transition:transform .25s;z-index:9}
+#toast.show{transform:translate(-50%,0)}
+.login{max-width:420px;margin:30px auto}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="bunting" aria-hidden="true"></div>
+<div class="wrap">
+  <header>
+    <h1><small>Game Night · admin</small>TV ads</h1>
+    <a class="btn sm" href="/" target="_blank">Open Game Night</a>
+    <button class="btn sm" id="logout" type="button" hidden>Log out</button>
+  </header>
+
+  <section class="card login" id="loginCard">
+    <h2>Log in</h2>
+    <p class="muted" style="margin:0">Use the admin email you added in the ads setup SQL.</p>
+    <form id="loginForm">
+      <label for="em">Email</label><input type="email" id="em" autocomplete="username" required>
+      <label for="pw">Password</label><input type="password" id="pw" autocomplete="current-password" required>
+      <button class="btn gold" style="width:100%;margin-top:18px" type="submit">Log in</button>
+      <p class="err" id="loginErr"></p>
+    </form>
+  </section>
+
+  <div class="layout" id="main" hidden>
+    <section class="card">
+      <h2 id="formTitle">New ad</h2>
+      <form id="adForm">
+        <label for="title">Headline <small>(max 70)</small></label>
+        <input type="text" id="title" maxlength="70" required placeholder="e.g. Detty December Rooftop Party, 20 Dec">
+        <label for="body">Short text <small>(optional, max 160)</small></label>
+        <textarea id="body" maxlength="160" placeholder="e.g. Early bird tickets ₦15,000. DJ, grills and fireworks."></textarea>
+        <label for="link">Link <small>(optional, must start with https://. Shows as a QR code on the TV)</small></label>
+        <input type="url" id="link" placeholder="https://instagram.com/yourbrand">
+        <label>Image <small>(flyer or product photo, optional)</small></label>
+        <div class="drop" id="drop"><div id="dropImg"></div><span id="dropTxt">Tap to choose a picture</span><input type="file" id="file" accept="image/*"></div>
+        <button class="btn sm" type="button" id="noImg" hidden style="margin-top:8px">Remove image</button>
+        <div class="two">
+          <div><label for="starts">Starts <small>(optional)</small></label><input type="date" id="starts"></div>
+          <div><label for="ends">Ends <small>(optional)</small></label><input type="date" id="ends"></div>
+        </div>
+        <div class="two">
+          <div><label for="advertiser">Advertiser <small>(only you see this)</small></label><input type="text" id="advertiser" maxlength="80" placeholder="e.g. Tolu Events"></div>
+          <div><label for="sort">Order <small>(lower shows first)</small></label><input type="number" id="sort" value="0" step="1"></div>
+        </div>
+        <label for="notes">Notes <small>(only you see this: amount paid, contact)</small></label>
+        <input type="text" id="notes" maxlength="200" placeholder="e.g. Paid ₦20,000 for 2 weeks">
+        <label class="check"><input type="checkbox" id="active" checked> Show on the TV</label>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
+          <button class="btn gold" type="submit" id="save">Save ad</button>
+          <button class="btn" type="button" id="cancel" hidden>Cancel edit</button>
+        </div>
+        <p class="err" id="formErr"></p>
+      </form>
+    </section>
+
+    <div>
+      <section class="card">
+        <h2>Preview on the TV</h2>
+        <div class="tv" id="preview"></div>
+      </section>
+      <section class="card">
+        <h2>All ads</h2>
+        <div class="list" id="list"><p class="muted">Loading…</p></div>
+      </section>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script type="module">
+import { SUPABASE_URL, SUPABASE_KEY } from '/js/config.js';
+const BUCKET = "gamenight-ads";
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const toast = m => { const t = $("toast"); t.textContent = m; t.classList.add("show"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 2200); };
+const today = () => new Date().toISOString().slice(0, 10);
+const ss = { get(k) { try { return JSON.parse(sessionStorage.getItem(k)); } catch { return null; } }, set(k, v) { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch { } }, del(k) { try { sessionStorage.removeItem(k); } catch { } } };
+
+let session = ss.get("gn-admin");   // { access_token, refresh_token, expires_at }
+let ads = [], editing = null, imgUrl = "", newBlob = null;
+
+/* ---------- auth ---------- */
+async function auth(body, grant) {
+  const r = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=${grant}`, { method: "POST", headers: { apikey: SUPABASE_KEY, "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error_description || j.msg || "Login failed");
+  session = { access_token: j.access_token, refresh_token: j.refresh_token, expires_at: Date.now() + (j.expires_in || 3600) * 1000 };
+  ss.set("gn-admin", session);
+}
+async function token() {
+  if (!session) throw new Error("Not logged in");
+  if (Date.now() > session.expires_at - 60000) await auth({ refresh_token: session.refresh_token }, "refresh_token");
+  return session.access_token;
+}
+async function api(path, opts = {}) {
+  const r = await fetch(`${SUPABASE_URL}${path}`, { ...opts, headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + await token(), ...(opts.headers || {}) } });
+  if (r.status === 401) { logout(); throw new Error("Session expired. Log in again."); }
+  if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.message || j.error || "Supabase said " + r.status); }
+  return r.status === 204 ? null : r.json().catch(() => null);
+}
+function logout() { session = null; ss.del("gn-admin"); $("main").hidden = true; $("logout").hidden = true; $("loginCard").hidden = false; }
+$("logout").onclick = logout;
+$("loginForm").onsubmit = async e => {
+  e.preventDefault(); $("loginErr").classList.remove("on");
+  try { await auth({ email: $("em").value.trim(), password: $("pw").value }, "password"); start(); }
+  catch (x) { $("loginErr").textContent = x.message; $("loginErr").classList.add("on"); }
+};
+
+/* ---------- list ---------- */
+const state = a => !a.active ? ["off", "Off"] : a.ends_on && a.ends_on < today() ? ["ended", "Ended"] : a.starts_on && a.starts_on > today() ? ["soon", "Starts " + a.starts_on] : ["live", "Live"];
+async function load() {
+  try {
+    const mine = await api("/rest/v1/rpc/is_gamenight_admin", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+    if (!mine) { $("list").innerHTML = `<p class="err on">This email isn't on the admin list. Add it in the SQL (gamenight_admins) and log in again.</p>`; return; }
+    ads = await api("/rest/v1/gamenight_ads?select=*&order=sort.asc,created_at.desc");
+    renderList();
+  } catch (x) { $("list").innerHTML = `<p class="err on">${esc(x.message)}</p>`; }
+}
+function renderList() {
+  $("list").innerHTML = ads.length ? ads.map(a => {
+    const [k, l] = state(a);
+    return `<div class="ad"><div class="th" style="${a.image_url ? `background-image:url('${esc(a.image_url)}')` : ""}">${a.image_url ? "" : "No image"}</div>
+      <div><b>${esc(a.title)}<span class="st ${k}">${esc(l)}</span></b><small>${esc([a.advertiser, a.ends_on ? "until " + a.ends_on : "", a.notes].filter(Boolean).join(" · ") || "—")}</small></div>
+      <div class="acts"><button class="btn sm" data-edit="${a.id}">Edit</button><button class="btn sm" data-toggle="${a.id}">${a.active ? "Turn off" : "Turn on"}</button><button class="btn sm bad" data-del="${a.id}">Delete</button></div></div>`;
+  }).join("") : `<p class="muted">No ads yet. The TV shows an "Your ad here" box until you add one.</p>`;
+}
+$("list").onclick = async e => {
+  const b = e.target.closest("button"); if (!b) return;
+  const id = b.dataset.edit || b.dataset.toggle || b.dataset.del; const a = ads.find(x => x.id === id); if (!a) return;
+  if (b.dataset.edit) return edit(a);
+  try {
+    if (b.dataset.toggle) { await api(`/rest/v1/gamenight_ads?id=eq.${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ active: !a.active }) }); toast(a.active ? "Turned off" : "Live on the TV"); }
+    if (b.dataset.del) {
+      if (!b.dataset.sure) { b.dataset.sure = 1; b.textContent = "Tap again to delete"; setTimeout(() => { delete b.dataset.sure; b.textContent = "Delete"; }, 3000); return; }
+      await api(`/rest/v1/gamenight_ads?id=eq.${id}`, { method: "DELETE" });
+      const path = storagePath(a.image_url); if (path) api(`/storage/v1/object/${BUCKET}/${path}`, { method: "DELETE" }).catch(() => { });
+      if (editing === id) resetForm();
+      toast("Deleted");
+    }
+    load();
+  } catch (x) { toast(x.message); }
+};
+
+/* ---------- form ---------- */
+function setImg(url) {
+  imgUrl = url;
+  $("dropImg").innerHTML = url ? `<img src="${esc(url)}" alt="">` : "";
+  $("dropTxt").textContent = url ? "Tap to change the picture" : "Tap to choose a picture";
+  $("noImg").hidden = !url; preview();
+}
+function resetForm() {
+  editing = null; newBlob = null; $("adForm").reset(); $("sort").value = 0; $("active").checked = true; setImg("");
+  $("formTitle").textContent = "New ad"; $("save").textContent = "Save ad"; $("cancel").hidden = true; $("formErr").classList.remove("on");
+}
+function edit(a) {
+  editing = a.id; newBlob = null;
+  $("title").value = a.title || ""; $("body").value = a.body || ""; $("link").value = a.link || "";
+  $("starts").value = a.starts_on || ""; $("ends").value = a.ends_on || ""; $("advertiser").value = a.advertiser || "";
+  $("notes").value = a.notes || ""; $("sort").value = a.sort || 0; $("active").checked = a.active;
+  setImg(a.image_url || "");
+  $("formTitle").textContent = "Edit ad"; $("save").textContent = "Save changes"; $("cancel").hidden = false;
+  $("adForm").scrollIntoView({ behavior: "smooth" });
+}
+$("cancel").onclick = resetForm;
+$("noImg").onclick = () => { newBlob = null; $("file").value = ""; setImg(""); };
+
+// shrink big photos before upload so the TV loads them fast
+async function shrink(file) {
+  const bmp = await createImageBitmap(file);
+  const k = Math.min(1, 1280 / Math.max(bmp.width, bmp.height));
+  const c = document.createElement("canvas"); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+  return await new Promise(r => c.toBlob(r, "image/jpeg", 0.85));
+}
+$("file").onchange = async () => {
+  const f = $("file").files[0]; if (!f) return;
+  if (!f.type.startsWith("image/")) return toast("Pick an image file");
+  try { newBlob = await shrink(f); setImg(URL.createObjectURL(newBlob)); }
+  catch { newBlob = f; setImg(URL.createObjectURL(f)); }
+};
+function storagePath(url) { const m = String(url || "").match(new RegExp(`/storage/v1/object/public/${BUCKET}/(.+)$`)); return m ? m[1] : ""; }
+
+$("adForm").oninput = preview;
+$("adForm").onsubmit = async e => {
+  e.preventDefault(); $("formErr").classList.remove("on");
+  const link = $("link").value.trim();
+  if (link && !/^https:\/\//.test(link)) { $("formErr").textContent = "The link must start with https://"; $("formErr").classList.add("on"); return; }
+  if ($("starts").value && $("ends").value && $("ends").value < $("starts").value) { $("formErr").textContent = "The end date is before the start date."; $("formErr").classList.add("on"); return; }
+  $("save").disabled = true;
+  try {
+    let image_url = imgUrl.startsWith("blob:") ? "" : imgUrl;
+    if (newBlob) {
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
+      await api(`/storage/v1/object/${BUCKET}/${path}`, { method: "POST", headers: { "Content-Type": newBlob.type || "image/jpeg", "x-upsert": "true" }, body: newBlob });
+      image_url = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`;
+    }
+    const row = {
+      title: $("title").value.trim(), body: $("body").value.trim() || null, link: link || null, image_url: image_url || null,
+      starts_on: $("starts").value || null, ends_on: $("ends").value || null, advertiser: $("advertiser").value.trim() || null,
+      notes: $("notes").value.trim() || null, sort: parseInt($("sort").value, 10) || 0, active: $("active").checked
+    };
+    const old = editing && ads.find(a => a.id === editing);
+    if (editing) await api(`/rest/v1/gamenight_ads?id=eq.${editing}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(row) });
+    else await api(`/rest/v1/gamenight_ads`, { method: "POST", headers: { "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify(row) });
+    if (old && old.image_url && old.image_url !== row.image_url) { const p = storagePath(old.image_url); if (p) api(`/storage/v1/object/${BUCKET}/${p}`, { method: "DELETE" }).catch(() => { }); }
+    toast(editing ? "Saved" : "Ad added. TVs pick it up within 10 minutes");
+    resetForm(); load();
+  } catch (x) { $("formErr").textContent = x.message; $("formErr").classList.add("on"); }
+  finally { $("save").disabled = false; }
+};
+
+function preview() {
+  const t = $("title").value.trim() || "Your headline", b = $("body").value.trim(), l = $("link").value.trim();
+  $("preview").innerHTML = `<div class="adslot"><span class="adtag">Sponsored</span>${imgUrl ? `<img src="${esc(imgUrl)}" alt="">` : ""}<div class="adtext"><b>${esc(t)}</b>${b ? `<p>${esc(b)}</p>` : ""}</div>${l ? `<div class="adlink"><div class="adqr">QR</div><span>${esc(l.replace(/^https:\/\/(www\.)?/, "").replace(/\/$/, ""))}</span></div>` : ""}</div>`;
+}
+
+function start() { $("loginCard").hidden = true; $("main").hidden = false; $("logout").hidden = false; resetForm(); load(); }
+if (session) start(); else preview();
+</script>
+</body>
+</html>

@@ -76,6 +76,7 @@ button:focus-visible,.opt:focus-within span{outline:3px solid var(--gold);outlin
 .box h3{font:800 18px/1.15 Unbounded,sans-serif;margin:0 0 4px}
 .ppt{background:#3b2350;border:2px solid #b45cff55}
 .ppt .opt input:checked+span{background:#b45cff;border-color:#b45cff;color:#fff;box-shadow:0 4px 0 #6d2ea8}
+.pikin{background:#3a1d33;border:2px solid #ff5cc855}
 .cash{background:#2f3016;border:2px solid #a3b06a55}
 .acct{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:12px 0;background:var(--bg2);border-radius:14px;padding:12px 14px}
 .acct b{font:800 20px Unbounded,sans-serif;letter-spacing:.04em;white-space:nowrap;color:var(--gold)}
@@ -165,6 +166,11 @@ ul.guests{list-style:none;padding:0;margin:0;display:grid;gap:8px}
       <label class="q" for="note">Details <small>(optional)</small></label>
       <textarea id="note" maxlength="200" placeholder="e.g. 2 bottles of Chapman mix, 1 tray of puff-puff"></textarea>
 
+      <div class="box pikin">
+        <h3>Who Pikin Be This?</h3>
+        <p class="sub" style="margin:0">One of the games is guessing whose baby picture is on the TV. Find a childhood photo on your phone before you come. You'll upload it from your phone during the game. It only shows for that round and isn't saved anywhere.</p>
+      </div>
+
       <div class="box ppt">
         <h3>PowerPoint Night</h3>
         <p class="sub" style="margin:0">Make a 3–5 minute slideshow on anything funny and present it to everyone. "Why my ex is a red flag", "Ranking Lagos danfo drivers", anything goes.</p>
@@ -239,9 +245,9 @@ const PROGRAM = [
   ["7:00", "Jollof Wars & Act Am", "Team Naija vs Team Ghana, then charades with the word on the actor's phone"],
   ["7:45", "Food break", "Pizza and refills. Whot! and Ludo on the side for those who can't sit still"],
   ["8:15", "PowerPoint Night", "3–5 minute funny presentations. The room votes for the best one"],
-  ["9:00", "Who Go Do Am? & Na Lie!", "\"Most likely to\" votes and two truths and a lie. Friendships will be tested"],
-  ["9:30", "Grand finale & forfeits", "Tonight's leaderboard decides the champion. Whoever comes last does a forfeit"],
-  ["9:50", "Winners & group photo", "Crown the champion and the best presenter"],
+  ["9:00", "Who Pikin Be This?", "Everyone's childhood photo on the TV. Guess whose baby face it is"],
+  ["9:20", "Who Go Do Am? & Na Lie!", "\"Most likely to\" votes and two truths and a lie. Friendships will be tested"],
+  ["9:40", "Finale, forfeits & group photo", "Tonight's leaderboard crowns the champion and the best presenter. Last place does a forfeit"],
   ["10:00", "Wrap up", "We end on time, just like we started"]
 ];
 const DATES = [["fri4", "Fri 4 Dec"], ["sat5", "Sat 5 Dec"], ["sun6", "Sun 6 Dec"]];
@@ -378,7 +384,7 @@ $("form").addEventListener("submit", async e => {
     const [look, col] = lookFor(name);
     $("doneChr").innerHTML = character(look, col, { pose: s === "no" ? "sad" : "up", seed: name });
     $("doneTitle").textContent = s === "yes" ? `See you there, ${name.split(" ")[0]}!` : s === "maybe" ? "Pencilled in!" : "We'll miss you!";
-    $("doneMsg").textContent = s === "no" ? (row.cash_amount ? "Thanks for the cash support. We'll play a round for you." : "Thanks for letting us know.") : "You're on the list. We'll lock the date from the votes and post it on the group. Meanwhile, warm up on the games.";
+    $("doneMsg").textContent = s === "no" ? (row.cash_amount ? "Thanks for the cash support. We'll play a round for you." : "Thanks for letting us know.") : "You're on the list. We'll lock the date from the votes and post it on the group. Don't forget your childhood photo!";
     $("tryWrap").style.display = s === "no" ? "none" : "";
     $("form").style.display = "none"; $("done").classList.add("on");
     $("done").scrollIntoView({ behavior: "smooth", block: "center" });
