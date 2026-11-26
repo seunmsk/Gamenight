@@ -558,3 +558,35 @@ body.online .gamehead .rules { display: none; }
   .has-stage .pmain .pq .qmeta, body.online .ctl .pq .qmeta { display: none; }
   .has-stage .pmain .pad, body.online .ctl .pad { min-height: 54px; padding: 8px 14px; font-size: 17px; }
 }
+
+/* ===== Ludo + Whot compact on phones (solo, online, remote) ===== */
+.ludo-ctl { display: flex; flex-direction: column; gap: 14px; }
+@media (max-width: 700px) {
+  body.solo.playing .solo-stage { padding: 8px 10px; }
+  body.solo.playing .pbar { padding: 6px 12px; }
+  body.solo.playing .pbar .gdot { width: 32px; height: 32px; font-size: 15px; }
+  :is(body.solo, body.online) .ludo-wrap, .rstage .ludo-wrap { gap: 8px; }
+  :is(body.solo, body.online) .ludo-board, .rstage .ludo-board { width: min(100%, 56vh); margin: 0 auto; }
+  :is(body.solo, body.online) .ludo-side, .rstage .ludo-side { gap: 8px; }
+  :is(body.solo, body.online) .ludo-side .seats.col, .rstage .ludo-side .seats.col { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 6px; }
+  :is(body.solo, body.online) .ludo-side .seat, .rstage .ludo-side .seat { padding: 3px 12px 3px 3px; gap: 6px; font-size: 14px; border-width: 2px; }
+  :is(body.solo, body.online) .ludo-side .seat .av, .rstage .ludo-side .seat .av { width: 30px; height: 30px; }
+  :is(body.solo, body.online) .ludo-ctl, .rstage .ludo-ctl { flex-direction: row; align-items: stretch; gap: 8px; }
+  :is(body.solo, body.online) .ludo-ctl .dicebox, .rstage .ludo-ctl .dicebox { flex: 1 1 auto; flex-direction: row; align-items: center; justify-content: flex-start; text-align: left; padding: 6px 10px; gap: 10px; border-width: 2px; border-radius: 16px; }
+  :is(body.solo, body.online) .ludo-ctl .dicebox p, .rstage .ludo-ctl .dicebox p { font-size: 14px; line-height: 1.25; flex: 1; }
+  :is(body.solo, body.online) .ludo-ctl .die, .rstage .ludo-ctl .die { width: 48px; height: 48px; padding: 7px; border-radius: 10px; flex: none; }
+  :is(body.solo, body.online) .ludo-ctl .die i, .rstage .ludo-ctl .die i { width: 9px; height: 9px; }
+  :is(body.solo, body.online) .ludo-ctl .rollbtn { width: auto; max-width: none; min-height: 0; flex: 0 0 34%; font-size: 22px; padding: 0 12px; }
+  :is(body.solo, body.online) .ludo-ctl .tapnote { flex: 0 0 34%; margin: 0; font-size: 14px; display: grid; place-items: center; text-align: center; color: var(--gold); }
+  /* Whot in solo, same as online */
+  body.solo .whot-table { gap: 8px; }
+  body.solo .seats { gap: 6px; }
+  body.solo .whot-table .seat { padding: 3px 10px 3px 3px; gap: 6px; font-size: 14px; }
+  body.solo .whot-table .seat .av { width: 30px; height: 30px; }
+  body.solo .felt { min-height: 0; padding: 12px; gap: 28px; border-radius: 22px; box-shadow: inset 0 0 0 6px #5a3a1e, inset 0 0 30px #0008, 0 4px 0 #0006; }
+  body.solo .wcard.big { --w: 66px; } body.solo .wcard.back { --w: 58px; } body.solo .wcard.back span { font-size: 13px; }
+  body.solo .log .old { display: none; } body.solo .log p { font-size: 15px; }
+  body.solo .ctl .hand .wcard { --w: 52px; } body.solo .ctl .hand { gap: 6px; }
+  body.solo .rulesbox { margin: 4px 12px calc(80px + env(safe-area-inset-bottom)); }
+}
+@media (max-width: 700px) { body.solo .whot-table .felt { flex: none; } }

@@ -440,7 +440,7 @@ function startSolo(id, st) {
   document.body.className = 'phone solo playing';
   app.innerHTML = `<header class="pbar"><span class="gdot" style="--c:${g.color}">${g.glyph}</span><b>${esc(g.name)}</b><span class="grow"></span>${muteBtn()}<button class="iconbtn" id="squit">Quit</button></header>
     <main class="solo-main"><div id="stage" class="stage solo-stage"></div><div id="pad" class="pmain ctl"></div></main>${g.rules ? `<details class="rulesbox"><summary>Rules</summary><p>${esc(g.rules)}</p></details>` : ''}`;
-  keepAwake();
+  keepAwake(); window.scrollTo(0, 0);
   const stage = $('#stage'), pad = $('#pad');
   const se = new Engine({
     solo: true,

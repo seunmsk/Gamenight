@@ -161,8 +161,9 @@ export default {
     const seats = gs.seats.map(x => { const p = ctx.p(x.pid); const home = gs.tok[x.col].filter(t => t === FINISH).length; return `<div class="seat ${x === s && !gs.over ? 'on' : ''}" style="--c:${COLS[x.col].hex}">${av(p)}<b>${esc(p.name)}</b><span class="cc">${home}/${gs.tok[x.col].length} home</span></div>`; }).join('');
     const mine = ctx.solo && !ctx.p(s.pid).bot;
     return `<div class="ludo-wrap"><div class="ludo-board">${boardSVG(ctx, gs, mine || !ctx.solo && false)}</div>
-      <div class="ludo-side"><div class="seats col">${seats}</div><div class="dicebox" style="--c:${COLS[s.col].hex}">${dieFace(gs.dice)}<p>${esc(gs.msg || '')}</p>${!ctx.p(s.pid).bot && !gs.over ? timer(gs.end, 'sm') : ''}</div>
-      ${mine && gs.phase === 'roll' ? `<button class="btn huge" data-a='${A({ k: 'roll' })}'>Roll</button>` : ''}${mine && gs.phase === 'move' ? '<p class="lead">Tap a glowing token</p>' : ''}</div></div>`;
+      <div class="ludo-side"><div class="seats col">${seats}</div>
+      <div class="ludo-ctl"><div class="dicebox" style="--c:${COLS[s.col].hex}">${dieFace(gs.dice)}<p>${esc(gs.msg || '')}</p>${!ctx.p(s.pid).bot && !gs.over ? timer(gs.end, 'sm') : ''}</div>
+      ${mine && gs.phase === 'roll' ? `<button class="btn huge rollbtn" data-a='${A({ k: 'roll' })}'>Roll</button>` : ''}${mine && gs.phase === 'move' ? '<p class="lead tapnote">Tap a glowing token</p>' : ''}</div></div></div>`;
   },
   phone(ctx, gs, pid) {
     const s = cur(gs), seat = gs.seats.find(x => x.pid === pid);
