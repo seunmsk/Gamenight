@@ -45,6 +45,8 @@ h2{font:800 clamp(22px,6vw,28px)/1.1 Unbounded,sans-serif;margin:0}
 .try{display:block;margin:14px auto 0;max-width:340px;padding:12px 16px;border-radius:999px;background:var(--army);color:#fff;font-weight:800;text-decoration:none;box-shadow:0 4px 0 #2c3112}
 .try span{color:var(--gold)}
 .board h3{margin:14px 0 8px;font:800 15px/1.2 Unbounded,sans-serif;color:var(--soft)}
+.hint{margin:10px 0 0;padding:10px 14px;border-radius:14px;background:#f5b30118;border:2px solid #f5b30140;color:var(--soft);font-size:14px;line-height:1.4}
+.hint b{color:var(--gold)}
 .dates .opt input:checked+span{background:var(--coral);border-color:var(--coral);color:#fff;box-shadow:0 4px 0 #a8203a}
 
 /* cards */
@@ -156,6 +158,7 @@ ul.guests{list-style:none;padding:0;margin:0;display:grid;gap:8px}
     <div id="comingBits">
       <label class="q">Which dates work for you? <small>(pick all that work)</small></label>
       <div class="seg dates" id="dates"></div>
+      <p class="hint"><b>Saturday 5 Dec is looking most likely.</b> Tick every day you can make, and we'll confirm the date on the group.</p>
 
       <label class="q">Bringing anyone? <small>(plus ones)</small></label>
       <div class="row"><div class="step"><button type="button" id="minus" aria-label="One less">−</button><output id="plus">0</output><button type="button" id="add" aria-label="One more">+</button></div></div>
@@ -233,8 +236,8 @@ import { SUPABASE_URL, SUPABASE_KEY } from '/js/config.js';
 /* ====== EDIT THESE ====== */
 const EVENT = {
   host: "MSK",
-  lede: "Phones out, games on. Naija games, trash talk, food and a PowerPoint Night.",
-  date: "Fri 4 – Sun 6 Dec (vote below)",
+  lede: "Phones out, games on. You'll be the first to test out Game Night, the Naija games platform MSK built. Plus trash talk, food and a PowerPoint Night.",
+  date: "Fri 4 – Sun 6 Dec (most likely Sat 5)",
   site: "gamenight.mskbuilds.app",
   time: "6–10pm sharp",
   place: "38 Kola Motajo Close, Ilasan, Ikate (off Blenco)"
