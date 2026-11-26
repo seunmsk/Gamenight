@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#1a0f1f">
 <title>MSK's Game Night · RSVP</title>
-<meta name="description" content="MSK's Game Night, Naija style. Sunday 6 Dec 2026, 6–10pm. RSVP and tell us what you're bringing.">
+<meta name="description" content="MSK's Game Night, Naija style. Fri 4 – Sun 6 Dec 2026, 6–10pm. Vote for the date, RSVP and tell us what you're bringing.">
 <meta property="og:title" content="MSK's Game Night · Naija style">
-<meta property="og:description" content="Sunday 6 Dec 2026 · 6–10pm sharp. RSVP and tell us what you're bringing.">
+<meta property="og:description" content="Fri 4 – Sun 6 Dec 2026 · 6–10pm sharp. Vote for the date and RSVP.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Outfit:wght@400;600;700;800&family=Caveat:wght@700&display=swap">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231a0f1f'/%3E%3Ccircle cx='10' cy='16' r='5' fill='%23ff4f6d'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f5b301'/%3E%3Ccircle cx='22' cy='16' r='5' fill='%2316c2a3'/%3E%3C/svg%3E">
@@ -41,6 +41,11 @@ h2{font:800 clamp(22px,6vw,28px)/1.1 Unbounded,sans-serif;margin:0}
 .facts{margin:10px auto 14px;max-width:30em;background:var(--army);border-radius:16px;padding:10px 14px;display:grid;gap:3px;text-align:left;box-shadow:0 5px 0 #2c3112}
 .facts div{color:#fff;font-weight:700;font-size:14px;line-height:1.35;display:grid;grid-template-columns:3.8em minmax(0,1fr);gap:8px}
 .facts b{color:var(--gold);font-weight:800}
+.facts a{color:#fff;text-decoration:underline;text-underline-offset:3px}
+.try{display:block;margin:14px auto 0;max-width:340px;padding:12px 16px;border-radius:999px;background:var(--army);color:#fff;font-weight:800;text-decoration:none;box-shadow:0 4px 0 #2c3112}
+.try span{color:var(--gold)}
+.board h3{margin:14px 0 8px;font:800 15px/1.2 Unbounded,sans-serif;color:var(--soft)}
+.dates .opt input:checked+span{background:var(--coral);border-color:var(--coral);color:#fff;box-shadow:0 4px 0 #a8203a}
 
 /* cards */
 .card{background:var(--card);border-radius:24px;box-shadow:0 6px 0 #0006,0 18px 40px #0007;position:relative;overflow:hidden}
@@ -148,6 +153,9 @@ ul.guests{list-style:none;padding:0;margin:0;display:grid;gap:8px}
     </div>
 
     <div id="comingBits">
+      <label class="q">Which dates work for you? <small>(pick all that work)</small></label>
+      <div class="seg dates" id="dates"></div>
+
       <label class="q">Bringing anyone? <small>(plus ones)</small></label>
       <div class="row"><div class="step"><button type="button" id="minus" aria-label="One less">−</button><output id="plus">0</output><button type="button" id="add" aria-label="One more">+</button></div></div>
 
@@ -184,6 +192,7 @@ ul.guests{list-style:none;padding:0;margin:0;display:grid;gap:8px}
     <div class="me" id="doneChr"></div>
     <div class="big" id="doneTitle">You're on the list!</div>
     <p class="sub" id="doneMsg"></p>
+    <div id="tryWrap"><a class="try" href="https://gamenight.mskbuilds.app" target="_blank" rel="noopener">Warm up at <span>gamenight.mskbuilds.app</span></a></div>
     <button class="btn ghost" id="again" type="button" style="margin-top:14px">RSVP for someone else</button>
   </div>
 
@@ -201,6 +210,9 @@ ul.guests{list-style:none;padding:0;margin:0;display:grid;gap:8px}
       <div class="stat"><b id="sPpt">0</b><span>presenting</span></div>
       <div class="stat"><b id="sCash">₦0</b><span>cash pledged</span></div>
     </div>
+    <h3>Date votes</h3>
+    <div class="bars" id="dbars"></div>
+    <h3>What's covered</h3>
     <div class="bars" id="bars"></div>
     <ul class="guests" id="guests"><li class="empty">Loading the list…</li></ul>
   </section>
@@ -216,20 +228,23 @@ import { SUPABASE_URL, SUPABASE_KEY } from '/js/config.js';
 const EVENT = {
   host: "MSK",
   lede: "Phones out, games on. Naija games, trash talk, food and a PowerPoint Night.",
-  date: "Sunday, 6 Dec 2026",
+  date: "Fri 4 – Sun 6 Dec (vote below)",
+  site: "gamenight.mskbuilds.app",
   time: "6–10pm sharp",
   place: "38 Kola Motajo Close, Ilasan, Ikate (off Blenco)"
 };
 const PROGRAM = [
-  ["6:00", "Arrivals & warm-up", "Drinks, small chops, and everyone opens the Game Night link on their phone"],
-  ["6:30", "Icebreaker round", "Quick Naija trivia to get the room going"],
-  ["7:00", "Team games", "Split into teams: charades, Jollof Wars and more on the Game Night app"],
-  ["8:00", "Food break", "Pizza and refills. Trash talk allowed"],
-  ["8:30", "PowerPoint Night", "3–5 minute funny presentations. The room votes for the best one"],
-  ["9:20", "Grand finale", "Top teams face off for the night's bragging rights"],
-  ["9:45", "Winners & group photo", "Crown the champions and the best presenter"],
+  ["6:00", "Arrivals & join the room", "Drinks, small chops, then open gamenight.mskbuilds.app and join with the room code on the TV"],
+  ["6:30", "How Naija Are You?", "Speed trivia to get the room going. Everyone gets a Naija rating"],
+  ["7:00", "Jollof Wars & Act Am", "Team Naija vs Team Ghana, then charades with the word on the actor's phone"],
+  ["7:45", "Food break", "Pizza and refills. Whot! and Ludo on the side for those who can't sit still"],
+  ["8:15", "PowerPoint Night", "3–5 minute funny presentations. The room votes for the best one"],
+  ["9:00", "Who Go Do Am? & Na Lie!", "\"Most likely to\" votes and two truths and a lie. Friendships will be tested"],
+  ["9:30", "Grand finale & forfeits", "Tonight's leaderboard decides the champion. Whoever comes last does a forfeit"],
+  ["9:50", "Winners & group photo", "Crown the champion and the best presenter"],
   ["10:00", "Wrap up", "We end on time, just like we started"]
 ];
+const DATES = [["fri4", "Fri 4 Dec"], ["sat5", "Sat 5 Dec"], ["sun6", "Sun 6 Dec"]];
 const BANK = { bank: "Opay", number: "9051134461", name: "Oluwaseun Zurab Mosaku" };
 /* ======================== */
 
@@ -255,9 +270,10 @@ const CROWD = [['4-0', '#b45cff', 'wave'], ['3-2', '#4f8cff', 'up'], ['0-1', '#f
 $("crowd").innerHTML = CROWD.map(([l, c, pose], i) => `<div style="--d:${i * 0.17}s">${character(l, c, { pose, seed: 'r' + i })}</div>`).join("");
 $("lede").textContent = EVENT.lede;
 $("prog").innerHTML = PROGRAM.map(([t, a, b]) => `<li><time>${esc(t)}</time><div><b>${esc(a)}</b><span>${esc(b)}</span></div></li>`).join("");
-$("facts").innerHTML = [["When", EVENT.date + (EVENT.time ? " · " + EVENT.time : "")], ["Where", EVENT.place], ["Host", EVENT.host]]
-  .filter(f => f[1]).map(f => `<div><b>${esc(f[0])}</b> ${esc(f[1])}</div>`).join("");
-$("foot").innerHTML = `Hosted by ${esc(EVENT.host)}. Bring your A-game. <br>On the night, play at <a href="/">${esc(location.host || 'gamenight')}</a>`;
+$("facts").innerHTML = [["When", EVENT.date + (EVENT.time ? " · " + EVENT.time : "")], ["Where", EVENT.place], ["Host", EVENT.host], ["Games", EVENT.site]]
+  .filter(f => f[1]).map(f => f[0] === "Games" ? `<div><b>Games</b> <a href="https://${esc(f[1])}" target="_blank" rel="noopener">${esc(f[1])}</a></div>` : `<div><b>${esc(f[0])}</b> ${esc(f[1])}</div>`).join("");
+$("dates").innerHTML = DATES.map(([k, l]) => `<label class="opt"><input type="checkbox" name="dates" value="${k}"><span>${l}</span></label>`).join("");
+$("foot").innerHTML = `Hosted by ${esc(EVENT.host)}. Bring your A-game. <br>Try the games now at <a href="https://${esc(EVENT.site)}">${esc(EVENT.site)}</a>`;
 $("items").innerHTML = ITEMS.map(([k, l, svg]) => `<label class="opt"><input type="checkbox" name="items" value="${k}"><span><svg viewBox="0 0 26 26">${svg}</svg>${l}</span></label>`).join("");
 
 /* bank box */
@@ -290,7 +306,7 @@ const local = { get() { try { return JSON.parse(localStorage.getItem(LS)) || [];
                 add(r) { try { const a = local.get(); a.push(r); localStorage.setItem(LS, JSON.stringify(a)); } catch {} } };
 const H = { apikey: SUPABASE_KEY, "Content-Type": "application/json" };
 if (SUPABASE_KEY && SUPABASE_KEY.startsWith("eyJ")) H.Authorization = "Bearer " + SUPABASE_KEY;
-const FIELDS = "name,status,plus_ones,items,note,cash_amount,presenting,created_at";
+const FIELDS = "name,status,dates,plus_ones,items,note,cash_amount,presenting,created_at";
 let demo = !LIVE;
 
 async function load() {
@@ -316,13 +332,16 @@ function render(rows) {
   $("sHeads").textContent = yes.reduce((n, r) => n + 1 + (r.plus_ones || 0), 0);
   $("sPpt").textContent = going.filter(r => r.presenting).length;
   $("sCash").textContent = naira(rows.reduce((n, r) => n + (r.cash_amount || 0), 0));
+  const dc = DATES.map(([k, l]) => [l, going.filter(r => (r.dates || []).includes(k)).length]);
+  const dm = Math.max(1, ...dc.map(c => c[1]));
+  $("dbars").innerHTML = dc.map(([l, n]) => `<div class="bar${n ? "" : " zero"}"><span>${esc(l)}</span><i><em style="width:${n / dm * 100}%;background:var(--coral)"></em></i><b>${n}</b></div>`).join("");
   const counts = ITEMS.map(([k, l]) => [l, going.filter(r => (r.items || []).includes(k)).length]);
   const max = Math.max(1, ...counts.map(c => c[1]));
   $("bars").innerHTML = counts.map(([l, n]) => `<div class="bar${n ? "" : " zero"}"><span>${esc(l)}</span><i><em style="width:${n / max * 100}%"></em></i><b>${n}</b></div>`).join("");
   const list = rows.slice().reverse();
   $("guests").innerHTML = list.length ? list.map(r => {
     const it = (r.items || []).map(k => LABEL[k]).filter(Boolean).join(", ");
-    const bits = [it, r.note, r.cash_amount ? "sending " + naira(r.cash_amount) : "", r.presenting ? "presenting: " + r.presenting : ""].filter(Boolean).join(" · ");
+    const bits = [it, r.note, r.cash_amount ? "sending " + naira(r.cash_amount) : "", r.presenting ? "presenting: " + r.presenting : "", (r.dates || []).length ? "free: " + r.dates.map(k => (DATES.find(d => d[0] === k) || [0, ""])[1].slice(0, 3)).filter(Boolean).join("/") : ""].filter(Boolean).join(" · ");
     const tag = r.status === "yes" ? `<span class="tag">in${r.plus_ones ? " +" + r.plus_ones : ""}</span>` : r.status === "maybe" ? `<span class="tag maybe">maybe</span>` : `<span class="tag maybe">can't make it</span>`;
     return `<li>${avatar(r.name)}<div><div class="nm">${esc(r.name)}${tag}</div><div class="it">${esc(bits || (r.status === "no" ? "Next time!" : "Coming through"))}</div></div></li>`;
   }).join("") : `<li class="empty">No one yet. Be the first!</li>`;
@@ -341,9 +360,12 @@ $("form").addEventListener("submit", async e => {
   const s = status();
   const picked = [...document.querySelectorAll("input[name=items]:checked")].length;
   const cash = Number($("cashAmt").value) || 0;
+  const dates = [...document.querySelectorAll("input[name=dates]:checked")].map(c => c.value);
+  if (s !== "no" && !dates.length) { $("err").textContent = "Pick at least one date that works for you."; $("dates").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
   if (s !== "no" && !picked && !cash) { $("err").textContent = "Abeg, pick something to bring or put a cash amount."; $("items").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
   const row = {
     name, status: s,
+    dates: s === "no" ? [] : dates,
     plus_ones: s === "no" ? 0 : plus,
     items: s === "no" ? [] : [...document.querySelectorAll("input[name=items]:checked")].map(c => c.value),
     note: s === "no" ? null : ($("note").value.trim() || null),
@@ -356,7 +378,8 @@ $("form").addEventListener("submit", async e => {
     const [look, col] = lookFor(name);
     $("doneChr").innerHTML = character(look, col, { pose: s === "no" ? "sad" : "up", seed: name });
     $("doneTitle").textContent = s === "yes" ? `See you there, ${name.split(" ")[0]}!` : s === "maybe" ? "Pencilled in!" : "We'll miss you!";
-    $("doneMsg").textContent = s === "no" ? (row.cash_amount ? "Thanks for the cash support. We'll play a round for you." : "Thanks for letting us know.") : "You're on the list. Check the board below to see what everyone's bringing.";
+    $("doneMsg").textContent = s === "no" ? (row.cash_amount ? "Thanks for the cash support. We'll play a round for you." : "Thanks for letting us know.") : "You're on the list. We'll lock the date from the votes and post it on the group. Meanwhile, warm up on the games.";
+    $("tryWrap").style.display = s === "no" ? "none" : "";
     $("form").style.display = "none"; $("done").classList.add("on");
     $("done").scrollIntoView({ behavior: "smooth", block: "center" });
     refresh();

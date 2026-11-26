@@ -6,6 +6,7 @@ create table if not exists public.gamenight_rsvps (
   name text not null check (char_length(name) between 1 and 60),
   phone text,
   status text not null check (status in ('yes','maybe','no')),
+  dates text[] not null default '{}',
   plus_ones int not null default 0 check (plus_ones between 0 and 10),
   items text[] not null default '{}',
   note text check (note is null or char_length(note) <= 200),
@@ -14,6 +15,7 @@ create table if not exists public.gamenight_rsvps (
 );
 -- in case an older version of the table already exists
 alter table public.gamenight_rsvps add column if not exists presenting text;
+alter table public.gamenight_rsvps add column if not exists dates text[] not null default '{}';
 
 alter table public.gamenight_rsvps enable row level security;
 
@@ -24,5 +26,5 @@ create policy "anyone can read board" on public.gamenight_rsvps for select to an
 
 -- Guests can add an RSVP and read the board, but can't edit or delete anything.
 revoke all on public.gamenight_rsvps from anon;
-grant select (name, status, plus_ones, items, note, cash_amount, presenting, created_at) on public.gamenight_rsvps to anon;
-grant insert (name, phone, status, plus_ones, items, note, cash_amount, presenting) on public.gamenight_rsvps to anon;
+grant select (name, status, dates, plus_ones, items, note, cash_amount, presenting, created_at) on public.gamenight_rsvps to anon;
+grant insert (name, phone, status, dates, plus_ones, items, note, cash_amount, presenting) on public.gamenight_rsvps to anon;

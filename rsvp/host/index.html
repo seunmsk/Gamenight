@@ -93,6 +93,11 @@ td.nm{font-weight:800;white-space:nowrap}
   <div class="grid">
     <section class="card wide"><div class="kpis" id="kpis"></div></section>
 
+    <section class="card wide" style="--k:var(--coral)">
+      <h2>Date votes</h2>
+      <ul class="shop" id="dvotes"></ul>
+    </section>
+
     <section class="card" style="--k:var(--teal)">
       <h2>Shopping checklist</h2>
       <ul class="shop" id="shop"></ul>
@@ -111,7 +116,7 @@ td.nm{font-weight:800;white-space:nowrap}
       <div class="tools"><div class="seg" id="filter">
         <button data-f="all" class="on">Everyone</button><button data-f="yes">Coming</button><button data-f="maybe">Maybe</button><button data-f="no">Not coming</button>
       </div></div>
-      <div class="scroll"><table class="stack"><thead><tr><th>Name</th><th>Status</th><th>Plus ones</th><th>Bringing</th><th>Cash</th><th>RSVP'd</th></tr></thead><tbody id="rows"></tbody></table></div>
+      <div class="scroll"><table class="stack"><thead><tr><th>Name</th><th>Status</th><th>Plus ones</th><th>Dates</th><th>Bringing</th><th>Cash</th><th>RSVP'd</th></tr></thead><tbody id="rows"></tbody></table></div>
     </section>
   </div>
 </div>
@@ -119,7 +124,9 @@ td.nm{font-weight:800;white-space:nowrap}
 
 <script type="module">
 import { SUPABASE_URL, SUPABASE_KEY } from '/js/config.js';
-const EVENT = { title: "MSK's Game Night", when: "Sunday, 6 Dec 2026 · 6–10pm sharp", where: "38 Kola Motajo Close, Ilasan, Ikate (off Blenco)" };
+const EVENT = { title: "MSK's Game Night", when: "Fri 4 – Sun 6 Dec 2026 (date by vote) · 6–10pm sharp", where: "38 Kola Motajo Close, Ilasan, Ikate (off Blenco)" };
+const DATES = [["fri4", "Fri 4 Dec"], ["sat5", "Sat 5 Dec"], ["sun6", "Sun 6 Dec"]];
+const DL = Object.fromEntries(DATES);
 const ITEMS = [["soft", "Soft drinks"], ["alcohol", "Alcohol"], ["pizza", "Pizza"], ["chops", "Small chops"], ["snacks", "Snacks / chin chin"], ["ice", "Ice / water"], ["games", "Cards / board game"]];
 const LABEL = Object.fromEntries(ITEMS);
 const $ = id => document.getElementById(id);
@@ -137,7 +144,7 @@ function ago(iso) {
 
 async function load() {
   try {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/gamenight_rsvps?select=name,status,plus_ones,items,note,cash_amount,presenting,created_at&order=created_at.asc`, { headers: H });
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/gamenight_rsvps?select=name,status,dates,plus_ones,items,note,cash_amount,presenting,created_at&order=created_at.asc`, { headers: H });
     if (!r.ok) throw new Error(r.status === 404 ? "The RSVP table doesn't exist yet. Run the SQL setup in Supabase first." : "Supabase said " + r.status);
     rows = await r.json();
     $("err").classList.remove("on");
@@ -161,6 +168,9 @@ function render() {
     ["main", heads, "heads coming"], ["", maybeHeads, "maybe"], ["", no.length, "can't make it"], ["", naira(cash), "cash pledged"], ["", presenters.length, "presenting"]
   ].map(([c, v, l]) => `<div class="kpi ${c}"><b>${esc(v)}</b><span>${l}</span></div>`).join("");
 
+  const dv = DATES.map(([k, l]) => [k, l, going.filter(r => (r.dates || []).includes(k))]);
+  const best = Math.max(0, ...dv.map(d => d[2].length));
+  $("dvotes").innerHTML = dv.map(([k, l, who]) => `<li class="${who.length ? "" : "miss"}"><i class="dot" style="${who.length && who.length === best ? "background:var(--gold)" : ""}"></i><div><b>${esc(l)}${who.length && who.length === best ? " · leading" : ""}</b><small>${who.length ? who.map(r => esc(r.name) + (r.status === "maybe" ? " (maybe)" : "")).join(", ") : "Nobody yet"}</small></div><span class="n">${who.length || "0"}</span></li>`).join("");
   $("shop").innerHTML = ITEMS.map(([k, l]) => {
     const who = going.filter(r => (r.items || []).includes(k));
     return `<li class="${who.length ? "" : "miss"}"><i class="dot"></i><div><b>${esc(l)}</b><small>${who.length ? who.map(r => esc(r.name) + (r.status === "maybe" ? " (maybe)" : "")).join(", ") : "Nobody yet"}</small></div><span class="n">${who.length || "Missing"}</span></li>`;
@@ -177,8 +187,8 @@ function render() {
   $("rows").innerHTML = shown.length ? shown.map(r => {
     const items = (r.items || []).map(k => LABEL[k]).filter(Boolean).join(", ");
     const bring = [items, r.note].filter(Boolean).join(" · ");
-    return `<tr><td class="nm">${esc(r.name)}</td><td data-l="Status">${tag(r.status)}</td><td data-l="Plus ones" class="num">${r.plus_ones || 0}</td><td data-l="Bringing">${esc(bring || "—")}${r.presenting ? `<br><span class="muted">Presenting: ${esc(r.presenting)}</span>` : ""}</td><td data-l="Cash" class="num">${r.cash_amount ? naira(r.cash_amount) : "—"}</td><td data-l="RSVP'd" class="muted">${esc(ago(r.created_at))}</td></tr>`;
-  }).join("") : `<tr><td colspan="6" class="empty">Nobody here yet</td></tr>`;
+    return `<tr><td class="nm">${esc(r.name)}</td><td data-l="Status">${tag(r.status)}</td><td data-l="Plus ones" class="num">${r.plus_ones || 0}</td><td data-l="Dates">${esc((r.dates || []).map(k => DL[k]).filter(Boolean).join(", ") || "—")}</td><td data-l="Bringing">${esc(bring || "—")}${r.presenting ? `<br><span class="muted">Presenting: ${esc(r.presenting)}</span>` : ""}</td><td data-l="Cash" class="num">${r.cash_amount ? naira(r.cash_amount) : "—"}</td><td data-l="RSVP'd" class="muted">${esc(ago(r.created_at))}</td></tr>`;
+  }).join("") : `<tr><td colspan="7" class="empty">Nobody here yet</td></tr>`;
 }
 
 function waText() {
@@ -188,7 +198,7 @@ function waText() {
   const line = r => `${r.name}${r.plus_ones ? " +" + r.plus_ones : ""}${(r.items || []).length ? " – " + r.items.map(k => LABEL[k]).filter(Boolean).join(", ") : ""}${r.cash_amount ? " – " + naira(r.cash_amount) : ""}`;
   const missing = ITEMS.filter(([k]) => !going.some(r => (r.items || []).includes(k))).map(([, l]) => l);
   const presenters = going.filter(r => r.presenting);
-  let t = `*${EVENT.title}* 🎲\n${EVENT.when}\n${EVENT.where}\n\n*Coming (${heads})*\n`;
+  let t = `*${EVENT.title}* 🎲\n${EVENT.when}\n${EVENT.where}\n\n*Date votes*\n` + DATES.map(([k, l]) => `${l}: ${going.filter(r => (r.dates || []).includes(k)).length}`).join("\n") + `\n\n*Coming (${heads})*\n`;
   t += yes.length ? yes.map((r, i) => `${i + 1}. ${line(r)}`).join("\n") : "Nobody yet";
   if (maybe.length) t += `\n\n*Maybe*\n` + maybe.map(r => `• ${line(r)}`).join("\n");
   if (presenters.length) t += `\n\n*PowerPoint Night* 🎤\n` + presenters.map(r => `• ${r.name}: ${r.presenting}`).join("\n");
